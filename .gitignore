@@ -1,0 +1,15 @@
+.DS_Store
+.claude/
+
+# Xcode / XcodeGen
+ios/*.xcodeproj/
+ios/build/
+ios/DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Node backend
+backend/node_modules/
+backend/dist/
+backend/*.sqlite
+backend/.env
