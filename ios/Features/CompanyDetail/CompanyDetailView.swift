@@ -7,6 +7,18 @@ struct CompanyDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var announcements: [Announcement] = []
     @State private var events: [CalendarEvent] = []
+    @State private var showAllAnnouncements = false
+    @State private var showAllEvents = false
+
+    private static let collapsedCount = 3
+
+    private var visibleAnnouncements: [Announcement] {
+        showAllAnnouncements ? announcements : Array(announcements.prefix(Self.collapsedCount))
+    }
+
+    private var visibleEvents: [CalendarEvent] {
+        showAllEvents ? events : Array(events.prefix(Self.collapsedCount))
+    }
 
     var body: some View {
         List {
@@ -52,12 +64,17 @@ struct CompanyDetailView: View {
                     Text("Brak komunikatów dla tej spółki.")
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(announcements) { item in
+                    ForEach(visibleAnnouncements) { item in
                         VStack(alignment: .leading) {
                             Text(item.title)
                             Text(item.publishedAt.formatted(date: .abbreviated, time: .shortened))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                        }
+                    }
+                    if announcements.count > Self.collapsedCount {
+                        Button(showAllAnnouncements ? "Pokaż mniej" : "Pokaż więcej") {
+                            showAllAnnouncements.toggle()
                         }
                     }
                 }
@@ -68,12 +85,17 @@ struct CompanyDetailView: View {
                     Text("Brak zaplanowanych publikacji raportów.")
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(events) { event in
+                    ForEach(visibleEvents) { event in
                         VStack(alignment: .leading) {
                             Text(event.reportType)
                             Text(event.eventDate.formatted(date: .abbreviated, time: .omitted))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                        }
+                    }
+                    if events.count > Self.collapsedCount {
+                        Button(showAllEvents ? "Pokaż mniej" : "Pokaż więcej") {
+                            showAllEvents.toggle()
                         }
                     }
                 }
