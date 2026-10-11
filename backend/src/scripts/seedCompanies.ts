@@ -23,7 +23,7 @@ const upsert = db.prepare(`
 
 db.exec("BEGIN TRANSACTION");
 for (const company of seed.companies) {
-  upsert.run(company as unknown as Record<string, unknown>);
+  upsert.run({ ticker: company.ticker, isin: company.isin, name: company.name });
 }
 db.exec("COMMIT");
 

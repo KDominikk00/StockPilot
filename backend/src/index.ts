@@ -1,19 +1,23 @@
+import "dotenv/config";
 import Fastify from "fastify";
 import cron from "node-cron";
 import "./db/client";
 import { registerCompanyRoutes } from "./routes/companies";
 import { registerAnnouncementRoutes } from "./routes/announcements";
 import { registerCalendarRoutes } from "./routes/calendar";
+import { registerSubscriptionRoutes } from "./routes/subscriptions";
 import { pollEspiFeed } from "./sources/espiPoller";
 import { scrapeEarningsCalendar } from "./sources/calendarScraper";
+import { isConfigured as isApnsConfigured } from "./push/apns";
 
 const app = Fastify({ logger: true });
 
-app.get("/v1/health", async () => ({ status: "ok" }));
+app.get("/v1/health", async () => ({ status: "ok", apnsConfigured: isApnsConfigured() }));
 
 registerCompanyRoutes(app);
 registerAnnouncementRoutes(app);
 registerCalendarRoutes(app);
+registerSubscriptionRoutes(app);
 
 async function runEspiPoll(): Promise<void> {
   try {

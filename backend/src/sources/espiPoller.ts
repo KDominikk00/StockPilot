@@ -1,6 +1,7 @@
 import Parser from "rss-parser";
 import { db } from "../db/client";
 import { extractCompanyNameFromEspiTitle, matchCompanyByName } from "../matching/companyMatcher";
+import { notifyNewAnnouncement } from "../push/notifier";
 
 const ESPI_FEED_URL = "https://www.bankier.pl/rss/espi.xml";
 const SOURCE = "bankier_espi";
@@ -57,11 +58,12 @@ export async function pollEspiFeed(): Promise<PollResult> {
 
     if (result.changes > 0) {
       newItems++;
-      if (match.confidence === "unmatched") {
+      if (match.confidence === "unmatched" || !match.ticker) {
         unmatched++;
         insertUnmatched.run({ source: SOURCE, rawName: companyName, externalId });
       } else {
         matched++;
+        await notifyNewAnnouncement({ ticker: match.ticker, title, url });
       }
     }
   }
