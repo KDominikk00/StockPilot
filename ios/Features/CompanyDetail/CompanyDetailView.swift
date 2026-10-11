@@ -30,13 +30,31 @@ struct CompanyDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                     Spacer()
+                    QuoteBadge(ticker: company.ticker)
+                }
+                HStack {
                     Button {
                         company.isWatched.toggle()
                     } label: {
-                        Image(systemName: company.isWatched ? "star.fill" : "star")
+                        Label(
+                            company.isWatched ? "Obserwowana" : "Dodaj do watchlisty",
+                            systemImage: company.isWatched ? "star.fill" : "star"
+                        )
                     }
-                    .buttonStyle(.borderless)
+                    Spacer()
+                    if company.isWatched {
+                        Button {
+                            company.isMuted.toggle()
+                        } label: {
+                            Label(
+                                company.isMuted ? "Wyciszone" : "Wycisz powiadomienia",
+                                systemImage: company.isMuted ? "bell.slash.fill" : "bell"
+                            )
+                        }
+                    }
                 }
+                .buttonStyle(.borderless)
+                .font(.subheadline)
             }
 
             Section("Komunikaty") {

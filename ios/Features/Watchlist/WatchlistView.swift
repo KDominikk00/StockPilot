@@ -58,6 +58,7 @@ struct CompanyRow: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
+            QuoteBadge(ticker: company.ticker)
         }
     }
 }

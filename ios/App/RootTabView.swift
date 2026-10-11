@@ -7,6 +7,14 @@ struct RootTabView: View {
     @Query(filter: #Predicate<Company> { $0.isWatched })
     private var watchedCompanies: [Company]
 
+    @Query(filter: #Predicate<Announcement> { $0.isRead == false })
+    private var unreadAnnouncements: [Announcement]
+
+    private var unreadCount: Int {
+        let watchedTickers = Set(watchedCompanies.filter { !$0.isMuted }.map(\.ticker))
+        return unreadAnnouncements.filter { ($0.companyTicker).map(watchedTickers.contains) ?? false }.count
+    }
+
     var body: some View {
         TabView {
             NavigationStack {
@@ -18,6 +26,7 @@ struct RootTabView: View {
                 AnnouncementsFeedView()
             }
             .tabItem { Label("Komunikaty", systemImage: "megaphone.fill") }
+            .badge(unreadCount)
 
             NavigationStack {
                 EarningsCalendarView()
@@ -37,7 +46,7 @@ struct RootTabView: View {
 
     private func uploadSubscription() {
         guard let token = pushManager.deviceToken else { return }
-        let tickers = watchedCompanies.map(\.ticker)
+        let tickers = watchedCompanies.filter { !$0.isMuted }.map(\.ticker)
         Task {
             await SubscriptionSyncService.sync(deviceToken: token, tickers: tickers)
         }

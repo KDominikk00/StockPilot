@@ -3,6 +3,7 @@ import SwiftData
 
 struct AnnouncementsFeedView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
 
     @Query(filter: #Predicate<Company> { $0.isWatched })
     private var watchedCompanies: [Company]
@@ -12,6 +13,10 @@ struct AnnouncementsFeedView: View {
 
     private var watchedTickers: Set<String> {
         Set(watchedCompanies.map(\.ticker))
+    }
+
+    private var mutedTickers: Set<String> {
+        Set(watchedCompanies.filter(\.isMuted).map(\.ticker))
     }
 
     private var feed: [Announcement] {
@@ -36,22 +41,44 @@ struct AnnouncementsFeedView: View {
                 )
             } else {
                 ForEach(feed) { item in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(item.companyTicker ?? "")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(item.title)
-                        Text(item.publishedAt.formatted(date: .abbreviated, time: .shortened))
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                    Button {
+                        item.isRead = true
+                        if let url = URL(string: item.url) {
+                            openURL(url)
+                        }
+                    } label: {
+                        HStack(alignment: .top, spacing: 8) {
+                            if !item.isRead {
+                                Circle()
+                                    .fill(.tint)
+                                    .frame(width: 8, height: 8)
+                                    .padding(.top, 6)
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(item.companyTicker ?? "")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(item.title)
+                                    .font(item.isRead ? .body : .body.bold())
+                                    .foregroundStyle(.primary)
+                                Text(item.publishedAt.formatted(date: .abbreviated, time: .shortened))
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
         .navigationTitle("Komunikaty")
         .refreshable {
             do {
-                try await SyncService.syncAnnouncements(context: modelContext, watchedTickers: Array(watchedTickers))
+                try await SyncService.syncAnnouncements(
+                    context: modelContext,
+                    watchedTickers: Array(watchedTickers),
+                    mutedTickers: mutedTickers
+                )
                 syncError = nil
             } catch {
                 syncError = error.localizedDescription

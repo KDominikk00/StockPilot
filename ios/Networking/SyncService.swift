@@ -20,7 +20,11 @@ enum SyncService {
     /// refresh that finds new announcements fires a notification itself.
     private static let maxIndividualNotifications = 3
 
-    static func syncAnnouncements(context: ModelContext, watchedTickers: [String]) async throws {
+    static func syncAnnouncements(
+        context: ModelContext,
+        watchedTickers: [String],
+        mutedTickers: Set<String> = []
+    ) async throws {
         let items = try await BackendAPI.fetchAnnouncements(tickers: watchedTickers)
         let existingIDs = Set(try context.fetch(FetchDescriptor<Announcement>()).map(\.externalID))
 
@@ -39,9 +43,10 @@ enum SyncService {
         }
         try context.save()
 
-        guard !newlyInserted.isEmpty else { return }
-        if newlyInserted.count <= maxIndividualNotifications {
-            for announcement in newlyInserted {
+        let notifiable = newlyInserted.filter { !($0.companyTicker.map(mutedTickers.contains) ?? false) }
+        guard !notifiable.isEmpty else { return }
+        if notifiable.count <= maxIndividualNotifications {
+            for announcement in notifiable {
                 await PushNotificationManager.shared.scheduleLocalNotification(
                     title: announcement.companyTicker ?? "Komunikat",
                     body: announcement.title,
@@ -51,7 +56,7 @@ enum SyncService {
         } else {
             await PushNotificationManager.shared.scheduleLocalNotification(
                 title: "Nowe komunikaty",
-                body: "\(newlyInserted.count) nowych komunikatów od obserwowanych spółek",
+                body: "\(notifiable.count) nowych komunikatów od obserwowanych spółek",
                 identifier: "summary-\(UUID().uuidString)"
             )
         }

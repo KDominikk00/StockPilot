@@ -8,13 +8,22 @@ final class Company {
     var nameFull: String
     var isWatched: Bool
     var isActive: Bool
+    var isMuted: Bool = false
 
-    init(ticker: String, isin: String, nameFull: String, isWatched: Bool = false, isActive: Bool = true) {
+    init(
+        ticker: String,
+        isin: String,
+        nameFull: String,
+        isWatched: Bool = false,
+        isActive: Bool = true,
+        isMuted: Bool = false
+    ) {
         self.ticker = ticker
         self.isin = isin
         self.nameFull = nameFull
         self.isWatched = isWatched
         self.isActive = isActive
+        self.isMuted = isMuted
     }
 
     var displayName: String {

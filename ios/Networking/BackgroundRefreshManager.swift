@@ -55,8 +55,9 @@ final class BackgroundRefreshManager {
         let watched = try context.fetch(FetchDescriptor<Company>(predicate: #Predicate { $0.isWatched }))
         let tickers = watched.map(\.ticker)
         guard !tickers.isEmpty else { return }
+        let mutedTickers = Set(watched.filter(\.isMuted).map(\.ticker))
 
-        try await SyncService.syncAnnouncements(context: context, watchedTickers: tickers)
+        try await SyncService.syncAnnouncements(context: context, watchedTickers: tickers, mutedTickers: mutedTickers)
         try await SyncService.syncCalendarEvents(context: context, watchedTickers: tickers)
     }
 }
