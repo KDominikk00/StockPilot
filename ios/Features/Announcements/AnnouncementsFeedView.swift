@@ -2,11 +2,10 @@ import SwiftUI
 import SwiftData
 
 struct AnnouncementsFeedView: View {
+    let watchedCompanies: [Company]
+
     @Environment(\.modelContext) private var modelContext
     @Environment(\.openURL) private var openURL
-
-    @Query(filter: #Predicate<Company> { $0.isWatched })
-    private var watchedCompanies: [Company]
 
     @Query(sort: \Announcement.publishedAt, order: .reverse)
     private var allAnnouncements: [Announcement]
@@ -93,6 +92,6 @@ struct AnnouncementsFeedView: View {
 }
 
 #Preview {
-    NavigationStack { AnnouncementsFeedView() }
+    NavigationStack { AnnouncementsFeedView(watchedCompanies: []) }
         .modelContainer(for: [Company.self, Announcement.self, CalendarEvent.self], inMemory: true)
 }

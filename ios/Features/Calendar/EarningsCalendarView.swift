@@ -2,10 +2,9 @@ import SwiftUI
 import SwiftData
 
 struct EarningsCalendarView: View {
-    @Environment(\.modelContext) private var modelContext
+    let watchedCompanies: [Company]
 
-    @Query(filter: #Predicate<Company> { $0.isWatched })
-    private var watchedCompanies: [Company]
+    @Environment(\.modelContext) private var modelContext
 
     @Query private var allEvents: [CalendarEvent]
 
@@ -145,6 +144,6 @@ private struct MonthGrid: View {
 }
 
 #Preview {
-    NavigationStack { EarningsCalendarView() }
+    NavigationStack { EarningsCalendarView(watchedCompanies: []) }
         .modelContainer(for: [Company.self, Announcement.self, CalendarEvent.self], inMemory: true)
 }

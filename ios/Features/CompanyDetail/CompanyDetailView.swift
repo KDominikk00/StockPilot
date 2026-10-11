@@ -4,20 +4,9 @@ import SwiftData
 struct CompanyDetailView: View {
     @Bindable var company: Company
 
-    @Query private var allAnnouncements: [Announcement]
-    @Query private var allEvents: [CalendarEvent]
-
-    private var announcements: [Announcement] {
-        allAnnouncements
-            .filter { $0.companyTicker == company.ticker }
-            .sorted { $0.publishedAt > $1.publishedAt }
-    }
-
-    private var events: [CalendarEvent] {
-        allEvents
-            .filter { $0.companyTicker == company.ticker }
-            .sorted { $0.eventDate < $1.eventDate }
-    }
+    @Environment(\.modelContext) private var modelContext
+    @State private var announcements: [Announcement] = []
+    @State private var events: [CalendarEvent] = []
 
     var body: some View {
         List {
@@ -91,5 +80,19 @@ struct CompanyDetailView: View {
             }
         }
         .navigationTitle(company.ticker)
+        .task {
+            let ticker = company.ticker
+            let announcementDescriptor = FetchDescriptor<Announcement>(
+                predicate: #Predicate { $0.companyTicker == ticker },
+                sortBy: [SortDescriptor(\.publishedAt, order: .reverse)]
+            )
+            announcements = (try? modelContext.fetch(announcementDescriptor)) ?? []
+
+            let eventDescriptor = FetchDescriptor<CalendarEvent>(
+                predicate: #Predicate { $0.companyTicker == ticker },
+                sortBy: [SortDescriptor(\.eventDate)]
+            )
+            events = (try? modelContext.fetch(eventDescriptor)) ?? []
+        }
     }
 }

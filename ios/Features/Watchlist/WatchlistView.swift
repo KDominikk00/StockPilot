@@ -2,8 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct WatchlistView: View {
-    @Query(filter: #Predicate<Company> { $0.isWatched }, sort: \Company.nameFull)
-    private var watchedCompanies: [Company]
+    let watchedCompanies: [Company]
 
     @State private var searchText = ""
     @State private var showingSearch = false
@@ -64,6 +63,6 @@ struct CompanyRow: View {
 }
 
 #Preview {
-    NavigationStack { WatchlistView() }
+    NavigationStack { WatchlistView(watchedCompanies: []) }
         .modelContainer(for: [Company.self, Announcement.self, CalendarEvent.self], inMemory: true)
 }

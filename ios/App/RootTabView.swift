@@ -5,7 +5,7 @@ struct RootTabView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var pushManager = PushNotificationManager.shared
 
-    @Query(filter: #Predicate<Company> { $0.isWatched })
+    @Query(filter: #Predicate<Company> { $0.isWatched }, sort: \Company.nameFull)
     private var watchedCompanies: [Company]
 
     @Query(filter: #Predicate<Announcement> { $0.isRead == false })
@@ -19,18 +19,18 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                WatchlistView()
+                WatchlistView(watchedCompanies: watchedCompanies)
             }
             .tabItem { Label("Watchlist", systemImage: "star.fill") }
 
             NavigationStack {
-                AnnouncementsFeedView()
+                AnnouncementsFeedView(watchedCompanies: watchedCompanies)
             }
             .tabItem { Label("Komunikaty", systemImage: "megaphone.fill") }
             .badge(unreadCount)
 
             NavigationStack {
-                EarningsCalendarView()
+                EarningsCalendarView(watchedCompanies: watchedCompanies)
             }
             .tabItem { Label("Kalendarz", systemImage: "calendar") }
         }

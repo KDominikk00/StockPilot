@@ -5,8 +5,9 @@ struct CompanySearchView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \Company.nameFull) private var allCompanies: [Company]
+    @State private var allCompanies: [Company] = []
     @State private var searchText = ""
+    @State private var selectedTickers: Set<String> = []
 
     private var filtered: [Company] {
         guard !searchText.isEmpty else { return allCompanies }
@@ -20,7 +21,7 @@ struct CompanySearchView: View {
         NavigationStack {
             List(filtered) { company in
                 Button {
-                    company.isWatched.toggle()
+                    toggleSelection(company.ticker)
                 } label: {
                     HStack {
                         VStack(alignment: .leading) {
@@ -31,7 +32,7 @@ struct CompanySearchView: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        if company.isWatched {
+                        if selectedTickers.contains(company.ticker) {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.tint)
                         } else {
@@ -47,10 +48,41 @@ struct CompanySearchView: View {
             .navigationTitle("Dodaj spółki")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Gotowe") { dismiss() }
+                    Button("Gotowe") {
+                        commitSelection()
+                        dismiss()
+                    }
                 }
             }
         }
+        .task {
+            let descriptor = FetchDescriptor<Company>(sortBy: [SortDescriptor(\.nameFull)])
+            allCompanies = (try? modelContext.fetch(descriptor)) ?? []
+            selectedTickers = Set(allCompanies.filter(\.isWatched).map(\.ticker))
+        }
+    }
+
+    /// Selection only touches local view state while the sheet is open —
+    /// no SwiftData write happens per tap. Earlier this wrote through
+    /// immediately on every toggle, which crashed SwiftData with a
+    /// "Duplicate registration attempt" / memory-corruption fault after a
+    /// few consecutive writes to the same entity in quick succession, no
+    /// matter how the query/context setup was arranged. Batching every
+    /// change into a single save on confirm sidesteps that entirely and
+    /// also matches how a multi-select picker should behave.
+    private func toggleSelection(_ ticker: String) {
+        if selectedTickers.contains(ticker) {
+            selectedTickers.remove(ticker)
+        } else {
+            selectedTickers.insert(ticker)
+        }
+    }
+
+    private func commitSelection() {
+        for company in allCompanies where company.isWatched != selectedTickers.contains(company.ticker) {
+            company.isWatched = selectedTickers.contains(company.ticker)
+        }
+        try? modelContext.save()
     }
 }
 
