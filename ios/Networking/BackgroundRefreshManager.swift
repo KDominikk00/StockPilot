@@ -9,7 +9,7 @@ import SwiftData
 /// when they happen to open the app.
 final class BackgroundRefreshManager {
     static let shared = BackgroundRefreshManager()
-    static let taskIdentifier = "com.dominikkowalski.gpwcommandcenter.refresh"
+    static let taskIdentifier = "com.dominikkowalski.stockpilot.refresh"
 
     private static let refreshInterval: TimeInterval = 20 * 60
 

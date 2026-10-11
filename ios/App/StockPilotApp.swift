@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct GPWCommandCenterApp: App {
+struct StockPilotApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
     let modelContainer: ModelContainer

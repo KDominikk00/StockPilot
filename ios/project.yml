@@ -1,4 +1,4 @@
-name: GPWCommandCenter
+name: StockPilot
 options:
   bundleIdPrefix: com.dominikkowalski
   deploymentTarget:
@@ -6,7 +6,7 @@ options:
   createIntermediateGroups: true
 
 targets:
-  GPWCommandCenter:
+  StockPilot:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
@@ -18,17 +18,21 @@ targets:
       - path: Features
       - path: Resources
         buildPhase: resources
+      - path: Assets.xcassets
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.dominikkowalski.gpwcommandcenter
+        PRODUCT_BUNDLE_IDENTIFIER: com.dominikkowalski.stockpilot
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     info:
       path: Generated/Info.plist
       properties:
-        CFBundleDisplayName: "GPW Command Center"
-        UILaunchScreen: {}
+        CFBundleDisplayName: "StockPilot"
+        UILaunchScreen:
+          UIColorName: AccentColor
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UISupportedInterfaceOrientations:
@@ -38,4 +42,4 @@ targets:
         UIBackgroundModes:
           - fetch
         BGTaskSchedulerPermittedIdentifiers:
-          - com.dominikkowalski.gpwcommandcenter.refresh
+          - com.dominikkowalski.stockpilot.refresh
