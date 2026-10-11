@@ -10,6 +10,7 @@ struct AnnouncementDTO: Decodable {
     let url: String
     let published_at: String
     let match_confidence: String
+    let source: String
     let ticker: String
 }
 

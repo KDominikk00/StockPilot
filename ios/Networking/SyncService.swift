@@ -20,6 +20,13 @@ enum SyncService {
     /// refresh that finds new announcements fires a notification itself.
     private static let maxIndividualNotifications = 3
 
+    /// Matches backend/src/sources/companyBackfill.ts's SOURCE constant.
+    /// Items from this source are historical catch-up (fetched the first
+    /// time a company has zero announcements on file), not genuinely new —
+    /// they arrive pre-marked read so they don't inflate the unread badge
+    /// or trigger a "new announcement" notification.
+    private static let backfillSource = "bankier_company_backfill"
+
     static func syncAnnouncements(
         context: ModelContext,
         watchedTickers: [String],
@@ -31,19 +38,23 @@ enum SyncService {
         var newlyInserted: [Announcement] = []
         for item in items where !existingIDs.contains(item.external_id) {
             let publishedAt = isoFormatter.date(from: item.published_at) ?? .now
+            let isBackfilled = item.source == backfillSource
             let announcement = Announcement(
                 externalID: item.external_id,
                 companyTicker: item.ticker,
                 title: item.title,
                 url: item.url,
-                publishedAt: publishedAt
+                publishedAt: publishedAt,
+                isRead: isBackfilled
             )
             context.insert(announcement)
             newlyInserted.append(announcement)
         }
         try context.save()
 
-        let notifiable = newlyInserted.filter { !($0.companyTicker.map(mutedTickers.contains) ?? false) }
+        let notifiable = newlyInserted.filter {
+            !$0.isRead && !($0.companyTicker.map(mutedTickers.contains) ?? false)
+        }
         guard !notifiable.isEmpty else { return }
         if notifiable.count <= maxIndividualNotifications {
             for announcement in notifiable {

@@ -43,7 +43,7 @@ export function registerAnnouncementRoutes(app: FastifyInstance): void {
 
     const rows = db
       .prepare(
-        `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence, c.ticker
+        `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence, a.source, c.ticker
          FROM announcements a
          JOIN companies c ON c.id = a.company_id
          WHERE c.ticker IN (${placeholders}) ${cursorClause}
@@ -64,7 +64,7 @@ export function registerAnnouncementRoutes(app: FastifyInstance): void {
     await backfillTickers([ticker.toUpperCase()]);
     return db
       .prepare(
-        `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence
+        `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence, a.source
          FROM announcements a
          JOIN companies c ON c.id = a.company_id
          WHERE c.ticker = ?
