@@ -11,5 +11,5 @@ xcuserdata/
 # Node backend
 backend/node_modules/
 backend/dist/
-backend/*.sqlite
+backend/data/*.sqlite*
 backend/.env

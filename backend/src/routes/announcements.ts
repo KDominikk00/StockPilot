@@ -1,0 +1,64 @@
+import type { FastifyInstance } from "fastify";
+import { db } from "../db/client";
+
+interface AnnouncementsQuery {
+  tickers?: string;
+  limit?: string;
+  cursor?: string;
+}
+
+export function registerAnnouncementRoutes(app: FastifyInstance): void {
+  app.get("/v1/announcements", async (request) => {
+    const { tickers, limit, cursor } = request.query as AnnouncementsQuery;
+    const pageSize = Math.min(Number(limit) || 50, 200);
+
+    const tickerList = tickers
+      ?.split(",")
+      .map((t) => t.trim().toUpperCase())
+      .filter(Boolean);
+
+    if (!tickerList || tickerList.length === 0) {
+      return { items: [], nextCursor: null };
+    }
+
+    const placeholders = tickerList.map(() => "?").join(",");
+    const params: (string | number)[] = [...tickerList];
+
+    let cursorClause = "";
+    if (cursor) {
+      cursorClause = "AND a.published_at < ?";
+      params.push(cursor);
+    }
+
+    const rows = db
+      .prepare(
+        `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence, c.ticker
+         FROM announcements a
+         JOIN companies c ON c.id = a.company_id
+         WHERE c.ticker IN (${placeholders}) ${cursorClause}
+         ORDER BY a.published_at DESC
+         LIMIT ?`
+      )
+      .all(...params, pageSize + 1);
+
+    const hasMore = rows.length > pageSize;
+    const items = rows.slice(0, pageSize);
+    const nextCursor = hasMore ? (items[items.length - 1] as any).published_at : null;
+
+    return { items, nextCursor };
+  });
+
+  app.get("/v1/companies/:ticker/announcements", async (request) => {
+    const { ticker } = request.params as { ticker: string };
+    return db
+      .prepare(
+        `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence
+         FROM announcements a
+         JOIN companies c ON c.id = a.company_id
+         WHERE c.ticker = ?
+         ORDER BY a.published_at DESC
+         LIMIT 100`
+      )
+      .all(ticker.toUpperCase());
+  });
+}
