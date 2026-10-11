@@ -1,10 +1,19 @@
 import type { FastifyInstance } from "fastify";
 import { db } from "../db/client";
+import { backfillAnnouncementsIfEmpty } from "../sources/companyBackfill";
 
 interface AnnouncementsQuery {
   tickers?: string;
   limit?: string;
   cursor?: string;
+}
+
+async function backfillTickers(tickerList: string[]): Promise<void> {
+  const rows = db
+    .prepare(`SELECT id, ticker FROM companies WHERE ticker IN (${tickerList.map(() => "?").join(",")})`)
+    .all(...tickerList) as { id: number; ticker: string }[];
+
+  await Promise.all(rows.map((row) => backfillAnnouncementsIfEmpty(row.ticker, row.id)));
 }
 
 export function registerAnnouncementRoutes(app: FastifyInstance): void {
@@ -20,6 +29,8 @@ export function registerAnnouncementRoutes(app: FastifyInstance): void {
     if (!tickerList || tickerList.length === 0) {
       return { items: [], nextCursor: null };
     }
+
+    await backfillTickers(tickerList);
 
     const placeholders = tickerList.map(() => "?").join(",");
     const params: (string | number)[] = [...tickerList];
@@ -50,6 +61,7 @@ export function registerAnnouncementRoutes(app: FastifyInstance): void {
 
   app.get("/v1/companies/:ticker/announcements", async (request) => {
     const { ticker } = request.params as { ticker: string };
+    await backfillTickers([ticker.toUpperCase()]);
     return db
       .prepare(
         `SELECT a.external_id, a.title, a.url, a.published_at, a.match_confidence

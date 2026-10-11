@@ -41,7 +41,7 @@ struct CompanyDetailView: View {
                             systemImage: company.isWatched ? "star.fill" : "star"
                         )
                     }
-                    Spacer()
+                    .labelStyle(.iconOnly)
                     if company.isWatched {
                         Button {
                             company.isMuted.toggle()
@@ -51,10 +51,11 @@ struct CompanyDetailView: View {
                                 systemImage: company.isMuted ? "bell.slash.fill" : "bell"
                             )
                         }
+                        .labelStyle(.iconOnly)
                     }
                 }
                 .buttonStyle(.borderless)
-                .font(.subheadline)
+                .font(.title3)
             }
 
             Section("Komunikaty") {
