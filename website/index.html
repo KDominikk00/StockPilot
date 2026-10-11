@@ -172,15 +172,16 @@ html.ready .header{opacity:1;transform:none}
 .phone.p1{left:0;top:2rem;z-index:2;transform:rotate(-4deg)}
 .phone.p2{right:0;top:0;width:14rem;z-index:1;transform:rotate(6deg);opacity:.95}
 .phone-wrap{transition:transform .25s ease-out}
-.tickcard{position:absolute;left:-1.5rem;bottom:1rem;z-index:5;width:18rem;max-width:88%;border-radius:1.25rem;background:rgba(255,255,255,.78);padding:.5rem;box-shadow:0 1rem 2.5rem -.5rem rgba(0,0,0,.4),0 0 0 1px rgba(230,229,226,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#111}
+.tickcard{position:absolute;left:-2.5rem;bottom:-.5rem;z-index:5;width:17rem;max-width:88%;border-radius:1.25rem;background:rgba(255,255,255,.78);padding:.5rem;box-shadow:0 1rem 2.5rem -.5rem rgba(0,0,0,.4),0 0 0 1px rgba(230,229,226,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#111}
 @media (max-width:640px){.tickcard{left:0}}
 .tickcard .row{display:flex;gap:.5rem;cursor:pointer;border-radius:.875rem}
-.tickcard .tile{width:5rem;aspect-ratio:1;border-radius:.875rem;overflow:hidden;flex:none}
-.tickcard .tile img{width:100%;height:100%}
-.tickcard .pn{flex:1;border-radius:.875rem;background:rgba(241,240,238,.8);padding:.7rem;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
-.tick-slot{position:relative;min-height:3.25rem}
+.tickcard .row{align-items:center}
+.tickcard .tile{width:4rem;height:4rem;margin-left:.25rem;border-radius:1rem;overflow:hidden;flex:none;align-self:center;box-shadow:0 .5rem 1rem -.4rem rgba(210,22,39,.5)}
+.tickcard .tile img{width:100%;height:100%;object-fit:cover}
+.tickcard .pn{flex:1;border-radius:.875rem;background:rgba(241,240,238,.8);padding:.75rem .85rem;display:flex;flex-direction:column;gap:.7rem;min-width:0}
+.tick-slot{position:relative;min-height:2.6rem}
 .tick-cap{font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:rgba(17,17,17,.45)}
-.tick-title{max-width:9rem;font-size:.875rem;font-weight:500;line-height:1.35}
+.tick-title{margin-top:.2rem;font-size:.9375rem;font-weight:500;line-height:1.3}
 .tick-foot{display:flex;align-items:center;justify-content:space-between}
 .dots{display:flex;gap:.25rem;align-items:center}
 .dots i{height:.25rem;border-radius:9999px;transition:all .3s;width:.375rem;background:rgba(17,17,17,.2)}
@@ -197,9 +198,9 @@ html.ready .header{opacity:1;transform:none}
 /* ---------- about ---------- */
 .about .shell{display:grid;grid-template-columns:1fr;align-items:center;gap:3rem;padding-block:5rem}
 @media (min-width:1024px){.about .shell{grid-template-columns:1fr 1fr;padding-block:7rem}}
-.about-l{position:relative;min-height:14rem;display:flex;flex-direction:column;justify-content:space-between;gap:2rem}
-@media (min-width:1024px){.about-l{min-height:20rem}}
-.about-icon{position:absolute;left:50%;top:50%;width:11rem;height:11rem;border-radius:2.6rem;transform:translate(-50%,-50%) rotate(-8deg);box-shadow:0 2rem 4rem -1rem rgba(210,22,39,.45)}
+.about-l{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:2.5rem;min-height:22rem}
+@media (min-width:1024px){.about-l{min-height:27rem}}
+.about-icon{align-self:center;width:11rem;height:11rem;border-radius:2.6rem;transform:rotate(-8deg);box-shadow:0 2rem 4rem -1rem rgba(210,22,39,.45)}
 @media (min-width:640px){.about-icon{width:14rem;height:14rem;border-radius:3.2rem}}
 .about-cap{position:relative;display:flex;align-items:center;gap:.75rem;font-size:.875rem;color:rgba(17,17,17,.7)}
 .about-cap span{max-width:14rem}
