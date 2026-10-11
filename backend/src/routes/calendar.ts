@@ -1,10 +1,19 @@
 import type { FastifyInstance } from "fastify";
 import { db } from "../db/client";
+import { backfillCalendarIfEmpty } from "../sources/companyCalendarBackfill";
 
 interface CalendarQuery {
   tickers?: string;
   from?: string;
   to?: string;
+}
+
+async function backfillTickers(tickerList: string[]): Promise<void> {
+  const rows = db
+    .prepare(`SELECT id, ticker FROM companies WHERE ticker IN (${tickerList.map(() => "?").join(",")})`)
+    .all(...tickerList) as { id: number; ticker: string }[];
+
+  await Promise.all(rows.map((row) => backfillCalendarIfEmpty(row.ticker, row.id)));
 }
 
 export function registerCalendarRoutes(app: FastifyInstance): void {
@@ -19,6 +28,8 @@ export function registerCalendarRoutes(app: FastifyInstance): void {
     if (!tickerList || tickerList.length === 0) {
       return { items: [] };
     }
+
+    await backfillTickers(tickerList);
 
     const placeholders = tickerList.map(() => "?").join(",");
     const params: string[] = [...tickerList];
@@ -48,6 +59,7 @@ export function registerCalendarRoutes(app: FastifyInstance): void {
 
   app.get("/v1/companies/:ticker/calendar", async (request) => {
     const { ticker } = request.params as { ticker: string };
+    await backfillTickers([ticker.toUpperCase()]);
     return db
       .prepare(
         `SELECT e.external_id, e.event_type, e.event_date, e.source_text

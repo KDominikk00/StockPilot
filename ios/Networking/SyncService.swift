@@ -78,7 +78,8 @@ enum SyncService {
         let existingIDs = Set(try context.fetch(FetchDescriptor<CalendarEvent>()).map(\.externalID))
 
         for item in items where !existingIDs.contains(item.external_id) {
-            guard let eventDate = dayFormatter.date(from: item.event_date) else { continue }
+            guard let eventDate = isoFormatter.date(from: item.event_date) ?? dayFormatter.date(from: item.event_date)
+            else { continue }
             let event = CalendarEvent(
                 externalID: item.external_id,
                 companyTicker: item.ticker,

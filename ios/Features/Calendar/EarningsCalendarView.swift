@@ -40,7 +40,7 @@ struct EarningsCalendarView: View {
                     ContentUnavailableView(
                         "Brak zaplanowanych publikacji",
                         systemImage: "calendar.badge.clock",
-                        description: Text("Pociągnij, aby odświeżyć z backendu.")
+                        description: Text("Przeciągnij listę w dół, aby sprawdzić najnowsze terminy.")
                     )
                 } else {
                     ForEach(upcoming, id: \.self) { day in

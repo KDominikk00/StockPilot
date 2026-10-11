@@ -37,7 +37,7 @@ struct AnnouncementsFeedView: View {
                 ContentUnavailableView(
                     "Brak komunikatów",
                     systemImage: "tray",
-                    description: Text("Pociągnij, aby odświeżyć z backendu.")
+                    description: Text("Przeciągnij listę w dół, aby sprawdzić najnowsze komunikaty.")
                 )
             } else {
                 ForEach(feed) { item in

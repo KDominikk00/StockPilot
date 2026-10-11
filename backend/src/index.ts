@@ -7,7 +7,6 @@ import { registerAnnouncementRoutes } from "./routes/announcements";
 import { registerCalendarRoutes } from "./routes/calendar";
 import { registerSubscriptionRoutes } from "./routes/subscriptions";
 import { pollEspiFeed } from "./sources/espiPoller";
-import { scrapeEarningsCalendar } from "./sources/calendarScraper";
 import { isConfigured as isApnsConfigured } from "./push/apns";
 
 const app = Fastify({ logger: true });
@@ -28,24 +27,13 @@ async function runEspiPoll(): Promise<void> {
   }
 }
 
-async function runCalendarScrape(): Promise<void> {
-  try {
-    const result = await scrapeEarningsCalendar();
-    app.log.info({ result }, "calendar scrape completed");
-  } catch (error) {
-    app.log.error({ error }, "calendar scrape failed");
-  }
-}
-
 const PORT = Number(process.env.PORT) || 3000;
 
 app
   .listen({ port: PORT, host: "0.0.0.0" })
   .then(() => {
     void runEspiPoll();
-    void runCalendarScrape();
     cron.schedule("*/3 * * * *", runEspiPoll);
-    cron.schedule("0 */12 * * *", runCalendarScrape);
   })
   .catch((error) => {
     app.log.error(error);
