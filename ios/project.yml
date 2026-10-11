@@ -13,6 +13,7 @@ targets:
     sources:
       - path: App
       - path: Models
+      - path: Networking
       - path: Features
       - path: Resources
         buildPhase: resources
@@ -21,9 +22,15 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.dominikkowalski.gpwcommandcenter
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: "GPW Command Center"
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: "GPW Command Center"
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true

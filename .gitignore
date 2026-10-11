@@ -3,6 +3,7 @@
 
 # Xcode / XcodeGen
 ios/*.xcodeproj/
+ios/Generated/
 ios/build/
 ios/DerivedData/
 *.xcuserstate

@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct AnnouncementsFeedView: View {
+    @Environment(\.modelContext) private var modelContext
+
     @Query(filter: #Predicate<Company> { $0.isWatched })
     private var watchedCompanies: [Company]
 
@@ -16,7 +18,7 @@ struct AnnouncementsFeedView: View {
         allAnnouncements.filter { ($0.companyTicker).map(watchedTickers.contains) ?? false }
     }
 
-    @State private var isRefreshing = false
+    @State private var syncError: String?
 
     var body: some View {
         List {
@@ -30,7 +32,7 @@ struct AnnouncementsFeedView: View {
                 ContentUnavailableView(
                     "Brak komunikatów",
                     systemImage: "tray",
-                    description: Text("Backend synchronizacji nie jest jeszcze podłączony (kolejna faza). Pociągnij, aby odświeżyć.")
+                    description: Text("Pociągnij, aby odświeżyć z backendu.")
                 )
             } else {
                 ForEach(feed) { item in
@@ -48,8 +50,18 @@ struct AnnouncementsFeedView: View {
         }
         .navigationTitle("Komunikaty")
         .refreshable {
-            // Faza 1 podłączy tu AnnouncementSyncService wywołujący backend.
+            do {
+                try await SyncService.syncAnnouncements(context: modelContext, watchedTickers: Array(watchedTickers))
+                syncError = nil
+            } catch {
+                syncError = error.localizedDescription
+            }
         }
+        .alert("Błąd synchronizacji", isPresented: .constant(syncError != nil), actions: {
+            Button("OK") { syncError = nil }
+        }, message: {
+            Text(syncError ?? "")
+        })
     }
 }
 

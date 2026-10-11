@@ -2,12 +2,15 @@ import SwiftUI
 import SwiftData
 
 struct EarningsCalendarView: View {
+    @Environment(\.modelContext) private var modelContext
+
     @Query(filter: #Predicate<Company> { $0.isWatched })
     private var watchedCompanies: [Company]
 
     @Query private var allEvents: [CalendarEvent]
 
     @State private var visibleMonth: Date = Calendar.current.startOfDay(for: .now)
+    @State private var syncError: String?
 
     private var watchedTickers: Set<String> {
         Set(watchedCompanies.map(\.ticker))
@@ -37,7 +40,7 @@ struct EarningsCalendarView: View {
                     ContentUnavailableView(
                         "Brak zaplanowanych publikacji",
                         systemImage: "calendar.badge.clock",
-                        description: Text("Synchronizacja terminarza wyników zostanie podłączona w kolejnej fazie.")
+                        description: Text("Pociągnij, aby odświeżyć z backendu.")
                     )
                 } else {
                     ForEach(upcoming, id: \.self) { day in
@@ -55,8 +58,21 @@ struct EarningsCalendarView: View {
                 }
             }
             .listStyle(.plain)
+            .refreshable {
+                do {
+                    try await SyncService.syncCalendarEvents(context: modelContext, watchedTickers: Array(watchedTickers))
+                    syncError = nil
+                } catch {
+                    syncError = error.localizedDescription
+                }
+            }
         }
         .navigationTitle("Kalendarz wyników")
+        .alert("Błąd synchronizacji", isPresented: .constant(syncError != nil), actions: {
+            Button("OK") { syncError = nil }
+        }, message: {
+            Text(syncError ?? "")
+        })
     }
 }
 
