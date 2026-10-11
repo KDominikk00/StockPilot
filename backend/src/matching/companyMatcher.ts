@@ -4,6 +4,7 @@ export interface MatchCandidate {
   id: number;
   ticker: string;
   normalizedName: string;
+  compactName: string;
 }
 
 export type MatchConfidence = "exact" | "fuzzy" | "unmatched";
@@ -71,11 +72,15 @@ function loadCandidates(): MatchCandidate[] {
     const rows = db
       .prepare("SELECT id, ticker, name_full FROM companies WHERE is_active = 1")
       .all() as { id: number; ticker: string; name_full: string }[];
-    cachedCandidates = rows.map((row) => ({
-      id: row.id,
-      ticker: row.ticker,
-      normalizedName: normalizeName(row.name_full),
-    }));
+    cachedCandidates = rows.map((row) => {
+      const normalizedName = normalizeName(row.name_full);
+      return {
+        id: row.id,
+        ticker: row.ticker,
+        normalizedName,
+        compactName: normalizedName.replace(/ /g, ""),
+      };
+    });
   }
   return cachedCandidates;
 }
@@ -93,6 +98,33 @@ export function extractCompanyNameFromEspiTitle(title: string): string {
   return idx === -1 ? title : title.slice(0, idx);
 }
 
+const MIN_COMPACT_CONTAINMENT_LENGTH = 4;
+
+/**
+ * Short-form sources (e.g. stockwatch.pl's earnings calendar) identify a
+ * company by an abbreviated code rather than its full legal name — often
+ * the ticker itself, or the legal name with spaces and suffixes stripped
+ * (e.g. "BOGDANKA" for "Lubelski Węgiel Bogdanka", "PKNORLEN" for "Orlen").
+ * We only accept a containment match when exactly one candidate qualifies,
+ * to avoid false positives between similarly-prefixed companies.
+ */
+function matchByTickerOrContainment(rawName: string, candidates: MatchCandidate[]): MatchCandidate | null {
+  const compactRaw = rawName.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (!compactRaw) return null;
+
+  const tickerHit = candidates.find((c) => c.ticker === compactRaw);
+  if (tickerHit) return tickerHit;
+
+  if (compactRaw.length < MIN_COMPACT_CONTAINMENT_LENGTH) return null;
+
+  const contained = candidates.filter(
+    (c) =>
+      c.compactName.length >= MIN_COMPACT_CONTAINMENT_LENGTH &&
+      (c.compactName.includes(compactRaw) || compactRaw.includes(c.compactName))
+  );
+  return contained.length === 1 ? contained[0] : null;
+}
+
 export function matchCompanyByName(rawName: string): MatchResult {
   const normalized = normalizeName(rawName);
   if (!normalized) return { companyId: null, ticker: null, confidence: "unmatched" };
@@ -101,6 +133,9 @@ export function matchCompanyByName(rawName: string): MatchResult {
 
   const exact = candidates.find((c) => c.normalizedName === normalized);
   if (exact) return { companyId: exact.id, ticker: exact.ticker, confidence: "exact" };
+
+  const containment = matchByTickerOrContainment(rawName, candidates);
+  if (containment) return { companyId: containment.id, ticker: containment.ticker, confidence: "fuzzy" };
 
   let best: { candidate: MatchCandidate; score: number } | null = null;
   for (const candidate of candidates) {

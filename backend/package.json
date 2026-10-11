@@ -11,7 +11,7 @@
     "poll:espi": "tsx src/scripts/pollEspiOnce.ts"
   },
   "dependencies": {
-    "cheerio": "^1.0.0",
+    "cheerio": "^1.2.0",
     "fastify": "^4.28.1",
     "node-cron": "^3.0.3",
     "rss-parser": "^3.13.0"
