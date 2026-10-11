@@ -40,6 +40,7 @@ struct CompanySearchView: View {
                         }
                     }
                 }
+                .buttonStyle(.plain)
             }
             .searchable(text: $searchText, prompt: "Szukaj spółki, ticker, ISIN")
             .navigationTitle("Dodaj spółki")
