@@ -46,10 +46,26 @@ function parsePage(html: string): ScrapedRow[] {
   return rows;
 }
 
+const REQUEST_TIMEOUT_MS = 15_000;
+const DELAY_BETWEEN_PAGES_MS = 400;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function fetchPage(page: number): Promise<string> {
   const url = `${BASE_URL}?p=all&t=all&pg=${page}&IndexId=GPW`;
+  // A self-identifying bot User-Agent gets silently tarpitted (connection
+  // never responds, no timeout, no 403) by this site's WAF — confirmed by
+  // hand. A realistic browser UA works fine; we still poll gently (one
+  // request every ~400ms, twice a day) out of courtesy since this is a
+  // third-party page, not an official API (see Faza 2 ryzyka w planie).
   const response = await fetch(url, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; GPWCommandCenterBot/0.1)" },
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+    },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
   if (!response.ok) throw new Error(`stockwatch terminarz HTTP ${response.status}`);
   return response.text();
@@ -71,6 +87,7 @@ export async function scrapeEarningsCalendar(): Promise<CalendarScrapeResult> {
   let unmatched = 0;
 
   while (page < MAX_PAGES) {
+    if (page > 0) await sleep(DELAY_BETWEEN_PAGES_MS);
     const html = await fetchPage(page);
     const rows = parsePage(html);
     if (rows.length === 0) break;

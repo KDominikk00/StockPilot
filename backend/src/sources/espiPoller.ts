@@ -6,7 +6,7 @@ import { notifyNewAnnouncement } from "../push/notifier";
 const ESPI_FEED_URL = "https://www.bankier.pl/rss/espi.xml";
 const SOURCE = "bankier_espi";
 
-const parser = new Parser();
+const parser = new Parser({ timeout: 15_000 });
 
 const insertAnnouncement = db.prepare(`
   INSERT OR IGNORE INTO announcements
