@@ -11,6 +11,8 @@ const insertEvent = db.prepare(`
 `);
 
 const countForCompany = db.prepare(`SELECT COUNT(*) as c FROM calendar_events WHERE company_id = ?`);
+const hasAttempted = db.prepare(`SELECT 1 FROM calendar_backfill_attempts WHERE company_id = ?`);
+const recordAttempt = db.prepare(`INSERT OR IGNORE INTO calendar_backfill_attempts (company_id) VALUES (?)`);
 
 /**
  * Replaces the original plan (stockwatch.pl/terminarz, a single global
@@ -25,6 +27,7 @@ const countForCompany = db.prepare(`SELECT COUNT(*) as c FROM calendar_events WH
 export async function backfillCalendarIfEmpty(ticker: string, companyId: number): Promise<number> {
   const existing = (countForCompany.get(companyId) as { c: number }).c;
   if (existing > 0) return 0;
+  if (hasAttempted.get(companyId)) return 0;
 
   const url = `https://www.bankier.pl/gielda/notowania/akcje/${encodeURIComponent(ticker)}/kalendarium`;
   let html: string;
@@ -42,28 +45,37 @@ export async function backfillCalendarIfEmpty(ticker: string, companyId: number)
     return 0;
   }
 
-  const $ = cheerio.load(html);
+  // Only recorded once we've actually got a page back, so a network hiccup
+  // doesn't permanently block retrying — but a company with a valid, empty
+  // kalendarium page won't be re-scraped on every future request.
+  recordAttempt.run(companyId);
+
   let inserted = 0;
+  try {
+    const $ = cheerio.load(html);
 
-  $(".m-quotes-calendar-list__item[data-timestamp]").each((_, dayGroup) => {
-    const timestamp = Number($(dayGroup).attr("data-timestamp"));
-    if (!Number.isFinite(timestamp)) return;
-    const eventDate = new Date(timestamp * 1000).toISOString();
+    $(".m-quotes-calendar-list__item[data-timestamp]").each((_, dayGroup) => {
+      const timestamp = Number($(dayGroup).attr("data-timestamp"));
+      if (!Number.isFinite(timestamp)) return;
+      const eventDate = new Date(timestamp * 1000).toISOString();
 
-    $(dayGroup)
-      .find(".m-quotes-calendar-list__event")
-      .each((eventIdx, eventEl) => {
-        const badge = $(eventEl).find(".a-quotes-badge .value").text().trim();
-        if (badge !== RESULTS_BADGE) return;
+      $(dayGroup)
+        .find(".m-quotes-calendar-list__event")
+        .each((eventIdx, eventEl) => {
+          const badge = $(eventEl).find(".a-quotes-badge .value").text().trim();
+          if (badge !== RESULTS_BADGE) return;
 
-        const sourceText = $(eventEl).find(".m-quotes-calendar-list__info").text().trim();
-        if (!sourceText) return;
+          const sourceText = $(eventEl).find(".m-quotes-calendar-list__info").text().trim();
+          if (!sourceText) return;
 
-        const externalId = `${SOURCE}:${ticker}:${timestamp}:${eventIdx}`;
-        const result = insertEvent.run({ companyId, externalId, eventDate, sourceText });
-        if (result.changes > 0) inserted++;
-      });
-  });
+          const externalId = `${SOURCE}:${ticker}:${timestamp}:${eventIdx}`;
+          const result = insertEvent.run({ companyId, externalId, eventDate, sourceText });
+          if (result.changes > 0) inserted++;
+        });
+    });
+  } catch {
+    return inserted;
+  }
 
   return inserted;
 }

@@ -61,6 +61,11 @@ CREATE TABLE IF NOT EXISTS feed_poll_state (
   last_fetched_at TEXT
 );
 
+CREATE TABLE IF NOT EXISTS calendar_backfill_attempts (
+  company_id INTEGER PRIMARY KEY REFERENCES companies(id),
+  attempted_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+);
+
 CREATE TABLE IF NOT EXISTS unmatched_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   source TEXT NOT NULL,
