@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StockPilot — Your command center for the Warsaw Stock Exchange</title>
+<meta name="description" content="StockPilot is a native iOS app for Warsaw Stock Exchange investors: a watchlist, every ESPI/EBI filing and an earnings calendar in one place. Coming soon to the App Store." />
+<meta name="theme-color" content="#0a0a0a" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="StockPilot — Coming soon to the App Store" />
+<meta property="og:description" content="Your command center for the Warsaw Stock Exchange: watchlist, ESPI/EBI filings and an earnings calendar, in one native iOS app." />
+<meta property="og:image" content="assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="preload" as="image" href="assets/watchlist.jpg" />
+<noscript><style>.rv,.line-inner,.word-in{opacity:1!important;transform:none!important}#loader{display:none!important}</style></noscript>
+
+<style>
+:root{
+  --background:#ffffff; --foreground:#111111;
+  --ink:#0a0a0a; --muted:#8d8d8d; --subtle:#b6b6b6; --line:#e6e5e2;
+  --surface:#f1f0ee; --surface-2:#e3e2df;
+  --accent:#d21627; --accent-from:#f0303f; --accent-to:#8e0e1a;
+  --radius-card:2rem; --radius-card-sm:1.25rem; --radius-control:.875rem;
+  --ease-line:cubic-bezier(.215,.61,.355,1);
+  --ease-word:cubic-bezier(.165,.84,.44,1);
+  --ease-spring:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+@media (max-width:1920px){html{font-size:.833333vw}}
+@media (max-width:1440px){html{font-size:1.111111vw}}
+@media (max-width:1024px){html{font-size:1.5625vw}}
+@media (max-width:640px){html{font-size:4.444444vw}}
+body{background:#fff;color:#111;font-family:'Onest',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+ul{list-style:none}
+img{display:block;max-width:100%}
+em{font-style:normal}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.skip{position:fixed;left:1rem;top:1rem;z-index:200;border-radius:.875rem;background:#0a0a0a;padding:.5rem 1rem;font-size:.875rem;color:#fff;transform:translateY(-200%)}
+.skip:focus{transform:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.shell{max-width:88rem;margin-inline:auto;padding-inline:1.25rem}
+@media (min-width:640px){.shell{padding-inline:2rem}}
+svg.i{width:1em;height:1em;flex:none;display:block}
+.ico-s{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.logo{width:1.5rem;height:1.5rem;border-radius:.4rem;flex:none}
+
+/* ---------- reveals ---------- */
+.rv{opacity:0;transform:translate3d(0,var(--y,24px),0) scale(var(--s,1));
+  transition:opacity .8s var(--ease-spring) var(--d,0ms),transform .8s var(--ease-spring) var(--d,0ms)}
+.rv.in{opacity:1;transform:none}
+.line{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em}
+.line-inner{display:block;transform:translateY(105%);opacity:0;
+  transition:transform .9s var(--ease-line),opacity .9s var(--ease-line);
+  transition-delay:calc(var(--d,0ms) + var(--i,0)*var(--ls,0ms))}
+.in>.line>.line-inner{transform:none;opacity:1}
+.word{display:inline-block}
+.word-in{display:inline-block;transform:translateY(24px);opacity:0;
+  transition:transform .7s var(--ease-word),opacity .7s var(--ease-word);
+  transition-delay:calc(var(--i,0)*35ms)}
+.in .word-in{transform:none;opacity:1}
+
+/* ---------- pills / chips ---------- */
+.pill{display:inline-flex;align-items:center;gap:.75rem;border-radius:9999px;font-size:.875rem;font-weight:500;white-space:nowrap}
+.pill.noarrow{padding:.875rem 1.75rem}
+.pill.arrow{padding:.375rem .375rem .375rem 1.5rem}
+.pill.dark{background:#0a0a0a;color:#fff}
+.pill.light{background:#f1f0ee;color:#111}
+.pill.outline{border:1px solid var(--line);background:transparent;color:#111}
+.pill.glass{border:1px solid rgba(255,255,255,.35);color:#fff;background:rgba(255,255,255,.08)}
+.pill-badge{width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:9999px;font-size:1rem;background:#0a0a0a;color:#fff}
+.pill.dark .pill-badge{background:#fff;color:#0a0a0a}
+.pill.glass .pill-badge{background:#fff;color:var(--accent)}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.875rem;font-weight:500;color:rgba(17,17,17,.7)}
+.eyebrow::before{content:"";width:.375rem;height:.375rem;border-radius:9999px;background:var(--accent)}
+.eyebrow.light{color:rgba(255,255,255,.7)}
+.eyebrow.light::before{background:var(--accent-from)}
+.eyebrow.boxed{border:1px solid var(--line);border-radius:9999px;padding:.375rem 1rem}
+.chip{display:inline-flex;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:9999px;padding:.5rem 1rem;font-size:.875rem}
+
+/* ---------- loader ---------- */
+#loader{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2rem;
+  background:#0a0a0a;color:#fff;border-radius:0 0 2rem 2rem;transition:transform .75s cubic-bezier(.22,1,.36,1)}
+#loader.out{transform:translateY(-100%)}
+.loader-c{display:flex;flex-direction:column;align-items:center;gap:1.25rem;text-align:center;transition:opacity .4s,transform .6s cubic-bezier(.22,1,.36,1)}
+#loader.out .loader-c{opacity:0;transform:translateY(-12px)}
+.loader-brand{display:flex;align-items:center;gap:.75rem;font-weight:600;font-size:1.5rem}
+.loader-brand .logo{width:2.25rem;height:2.25rem;border-radius:.55rem}
+@media (min-width:640px){.loader-brand{font-size:1.875rem}}
+.loader-tag{max-width:24ch;font-size:.875rem;color:rgba(255,255,255,.55)}
+.loader-bar{width:min(22rem,72vw);display:flex;flex-direction:column;gap:.75rem}
+.loader-track{height:1px;background:rgba(255,255,255,.15)}
+.loader-fill{height:100%;width:0;background:var(--accent-from);transition:width .1s ease-out}
+.loader-row{display:flex;justify-content:space-between;font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.45)}
+.loader-row b{font-weight:500;color:rgba(255,255,255,.8);font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+.header{position:absolute;inset-inline:0;top:0;z-index:50;color:#fff;opacity:0;transform:translateY(-14px);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1) .15s,transform .7s cubic-bezier(.22,1,.36,1) .15s}
+html.ready .header{opacity:1;transform:none}
+.header .shell{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding-block:1.25rem}
+@media (min-width:640px){.header .shell{padding-block:2rem}}
+.brand{display:flex;align-items:center;gap:.5rem;font-size:1.125rem;font-weight:600;letter-spacing:-.01em}
+.nav{display:none;gap:2rem;font-size:.875rem;font-weight:500}
+@media (min-width:1024px){.nav{display:flex}}
+.nav button{display:block}
+.header-r{display:flex;align-items:center;gap:.5rem}
+.glassbtn{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:.875rem;transition:background .2s}
+.glassbtn:hover{background:rgba(255,255,255,.22)}
+.clock{display:none;align-items:center;gap:.75rem;padding:.5rem .75rem;font-size:.75rem;color:rgba(255,255,255,.8)}
+@media (min-width:768px){.clock{display:flex}}
+.clock .lbl{color:rgba(255,255,255,.55)}
+.clock .tm{min-width:3.5rem;font-variant-numeric:tabular-nums;font-weight:500;color:#fff}
+.clock .sep{color:rgba(255,255,255,.4)}
+.clock .dt{font-weight:500}
+.lang{display:flex;align-items:center;padding:.25rem;font-size:.75rem;font-weight:600}
+.lang button{padding:.3rem .55rem;border-radius:.6rem;color:rgba(255,255,255,.7);transition:background .2s,color .2s}
+.lang button[aria-pressed=true]{background:#fff;color:var(--accent)}
+.menubtn>span{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.menubtn .mt{display:none}
+@media (min-width:640px){.menubtn .mt{display:inline}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;isolation:isolate;overflow:hidden;border-radius:0 0 2rem 2rem;background:#7a0b14;color:#fff}
+.hero-bg{position:absolute;inset:0;z-index:0;
+  background:
+   linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px) 0 0/4rem 4rem,
+   linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px) 0 0/4rem 4rem,
+   radial-gradient(60% 60% at 80% 20%,rgba(255,80,90,.35),transparent 70%),
+   linear-gradient(135deg,#c4121f 0%,#8e0e1a 55%,#5e0710 100%)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.hero-vig{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.25),transparent 35%,rgba(0,0,0,.35))}
+.watermark{pointer-events:none;position:absolute;inset-inline:0;bottom:7rem;z-index:1;text-align:center;user-select:none;font-weight:700;line-height:1;font-size:13rem;color:rgba(255,255,255,.1);white-space:nowrap}
+.watermark.rv{--y:20px;--d:300ms}
+.hero-grid{position:relative;z-index:20;display:flex;flex-direction:column;gap:2rem;padding:7rem 1.25rem 3rem}
+@media (min-width:640px){.hero-grid{padding-inline:2rem}}
+@media (min-width:1024px){.hero-grid{display:grid;min-height:calc(100lvh - 4.5rem);grid-template-columns:repeat(12,1fr);gap:2.5rem;padding:9rem 2rem 4rem;align-items:center}}
+.hero-l{display:flex;flex-direction:column;gap:1.75rem}
+@media (min-width:1024px){.hero-l{grid-column:span 7}.hero-r{grid-column:span 5}}
+.hero .eyebrow{color:rgba(255,255,255,.85)}
+.hero .eyebrow::before{background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 .6rem rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.h1{max-width:18ch;font-size:2.25rem;font-weight:600;line-height:.98;letter-spacing:-.02em}
+@media (min-width:640px){.h1{font-size:3rem}}
+@media (min-width:768px){.h1{font-size:3.75rem}}
+.hero-sub{max-width:34rem;font-size:1rem;line-height:1.5;color:rgba(255,255,255,.8)}
+.hero-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.hero-chips span{font-size:.8125rem;font-weight:500;padding:.4rem .85rem;border-radius:9999px;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.9);background:rgba(255,255,255,.08)}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
+.store{display:inline-flex;align-items:center;gap:.75rem;padding:.6rem 1.35rem .6rem 1.1rem;border-radius:.9rem;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,.35);cursor:default;text-align:left;user-select:none}
+.store svg{width:1.75rem;height:1.75rem;fill:currentColor}
+.store small{display:block;font-size:.6875rem;line-height:1.1;color:rgba(255,255,255,.75);letter-spacing:.02em}
+.store b{display:block;font-size:1.3rem;font-weight:600;line-height:1.1;letter-spacing:-.01em}
+.store.on-dark{background:#fff;color:#0a0a0a;border-color:#fff}
+.store.on-dark small{color:rgba(10,10,10,.65)}
+
+.hero-r{position:relative;display:flex;justify-content:center;min-height:30rem}
+@media (min-width:1024px){.hero-r{justify-content:flex-end}}
+.phones{position:relative;width:100%;max-width:30rem;height:36rem}
+.phone{position:absolute;width:15.5rem;border-radius:2.4rem;background:#0a0a0a;padding:.5rem;box-shadow:0 2.5rem 5rem -1rem rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12) inset}
+.phone img{border-radius:1.9rem;width:100%;height:auto;aspect-ratio:1206/2622;object-fit:cover;background:#f2f2f7}
+.phone::after{content:"";position:absolute;top:.95rem;left:50%;width:28%;height:.8rem;border-radius:9999px;background:#0a0a0a;transform:translateX(-50%)}
+.phone.p1{left:0;top:2rem;z-index:2;transform:rotate(-4deg)}
+.phone.p2{right:0;top:0;width:14rem;z-index:1;transform:rotate(6deg);opacity:.95}
+.phone-wrap{transition:transform .25s ease-out}
+.tickcard{position:absolute;left:-1.5rem;bottom:1rem;z-index:5;width:18rem;max-width:88%;border-radius:1.25rem;background:rgba(255,255,255,.78);padding:.5rem;box-shadow:0 1rem 2.5rem -.5rem rgba(0,0,0,.4),0 0 0 1px rgba(230,229,226,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#111}
+@media (max-width:640px){.tickcard{left:0}}
+.tickcard .row{display:flex;gap:.5rem;cursor:pointer;border-radius:.875rem}
+.tickcard .tile{width:5rem;aspect-ratio:1;border-radius:.875rem;overflow:hidden;flex:none}
+.tickcard .tile img{width:100%;height:100%}
+.tickcard .pn{flex:1;border-radius:.875rem;background:rgba(241,240,238,.8);padding:.7rem;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.tick-slot{position:relative;min-height:3.25rem}
+.tick-cap{font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:rgba(17,17,17,.45)}
+.tick-title{max-width:9rem;font-size:.875rem;font-weight:500;line-height:1.35}
+.tick-foot{display:flex;align-items:center;justify-content:space-between}
+.dots{display:flex;gap:.25rem;align-items:center}
+.dots i{height:.25rem;border-radius:9999px;transition:all .3s;width:.375rem;background:rgba(17,17,17,.2)}
+.dots i.on{width:1rem;background:rgba(17,17,17,.7)}
+.arrows{display:flex;gap:.35rem}
+.arrows button{width:1.75rem;height:1.75rem;display:grid;place-items:center;border-radius:9999px;background:#fff;color:rgba(17,17,17,.7);box-shadow:0 0 0 1px var(--line);font-size:.8rem}
+.arrows button:hover{color:#111}
+.status{position:relative;z-index:20}
+.status .shell{display:flex;align-items:center;justify-content:space-between;gap:.75rem;border-top:1px solid rgba(255,255,255,.18);padding-block:1.25rem;font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.025em;color:rgba(255,255,255,.75)}
+@media (max-width:640px){.watermark,.fwm{font-size:5.5rem}.watermark{bottom:5rem}}
+.status .mid{display:none}
+@media (min-width:640px){.status .mid{display:block}}
+
+/* ---------- about ---------- */
+.about .shell{display:grid;grid-template-columns:1fr;align-items:center;gap:3rem;padding-block:5rem}
+@media (min-width:1024px){.about .shell{grid-template-columns:1fr 1fr;padding-block:7rem}}
+.about-l{position:relative;min-height:14rem;display:flex;flex-direction:column;justify-content:space-between;gap:2rem}
+@media (min-width:1024px){.about-l{min-height:20rem}}
+.about-icon{position:absolute;left:50%;top:50%;width:11rem;height:11rem;border-radius:2.6rem;transform:translate(-50%,-50%) rotate(-8deg);box-shadow:0 2rem 4rem -1rem rgba(210,22,39,.45)}
+@media (min-width:640px){.about-icon{width:14rem;height:14rem;border-radius:3.2rem}}
+.about-cap{position:relative;display:flex;align-items:center;gap:.75rem;font-size:.875rem;color:rgba(17,17,17,.7)}
+.about-cap span{max-width:14rem}
+.about-cap .i{font-size:1.5rem;color:var(--accent)}
+.statement{font-size:1.5rem;font-weight:500;line-height:1.35;letter-spacing:-.01em}
+.statement em{color:var(--muted)}
+@media (min-width:640px){.statement{font-size:1.875rem}}
+.about-r{display:flex;flex-direction:column;gap:2.5rem}
+.about-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem;border-top:1px solid var(--line);padding-top:1.5rem}
+.about-foot p{font-size:.875rem;color:rgba(17,17,17,.55)}
+
+/* ---------- band ---------- */
+.band{display:flex;flex-direction:column;gap:.75rem;padding:2.5rem 1.25rem}
+@media (min-width:640px){.band{flex-direction:row;gap:1rem;padding-inline:2rem}}
+.band li{flex:1}
+.tile{display:grid;place-items:center;height:6rem;border-radius:9999px;font-size:1.875rem;font-weight:500}
+@media (min-width:640px){.tile{height:10rem;font-size:2.25rem}}
+.tile.light{background:#f1f0ee;color:#111}
+.tile.accent{background:linear-gradient(to bottom right,var(--accent-from),var(--accent-to));color:#fff}
+.tile.dark{background:#0a0a0a;color:#fff}
+.tile.dark .i{font-size:2.25rem}
+@media (min-width:640px){.tile.dark .i{font-size:3rem}}
+.tile.ghost{background:rgba(241,240,238,.6);color:rgba(17,17,17,.35)}
+
+/* ---------- section headings ---------- */
+.h2{font-size:2.25rem;font-weight:600;letter-spacing:-.02em;line-height:1.05}
+@media (min-width:640px){.h2{font-size:3rem}}
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.25rem}
+
+/* ---------- features ---------- */
+.features .shell{padding:2.5rem 1.25rem 5rem}
+@media (min-width:640px){.features .shell{padding-inline:2rem}}
+@media (min-width:1024px){.features .shell{padding-bottom:7rem}}
+.cards{display:grid;grid-template-columns:1fr;gap:1.5rem;margin-top:3rem}
+@media (min-width:768px){.cards{grid-template-columns:1fr 1fr}}
+.card{position:relative;display:flex;flex-direction:column;height:100%;min-height:34rem;overflow:hidden;border-radius:2rem;color:#fff;padding:1.5rem;
+  background:radial-gradient(80% 50% at 50% 105%,rgba(210,22,39,.55),transparent 70%),#0a0a0a;box-shadow:0 0 0 1px rgba(255,255,255,.05)}
+@media (min-width:640px){.card{padding:2rem}}
+.card-meta{display:flex;justify-content:space-between;align-items:center;font-size:.75rem;text-transform:uppercase;letter-spacing:.025em;color:rgba(255,255,255,.45)}
+.card-badge{width:2.75rem;height:2.75rem;display:grid;place-items:center;border-radius:9999px;background:rgba(255,255,255,.1);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.15);font-size:.8rem;font-weight:600;letter-spacing:.02em}
+.card h3{margin-top:1.25rem;font-size:1.5rem;font-weight:500;letter-spacing:-.01em}
+@media (min-width:640px){.card h3{font-size:1.875rem}}
+.card p{margin-top:.5rem;max-width:28rem;font-size:.875rem;line-height:1.5;color:rgba(255,255,255,.6)}
+.card .tags{margin-top:1.25rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.card .peek{position:relative;flex:1;min-height:15rem;margin-top:1.5rem}
+.card .peek .phone{left:50%;top:0;width:14rem;transform:translateX(-50%);border-radius:2.4rem 2.4rem 0 0;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 -1rem 3rem -1rem rgba(210,22,39,.35)}
+.card .peek .phone img{border-radius:1.9rem 1.9rem 0 0}
+.card .peek .phone::after{display:none}
+
+/* ---------- how ---------- */
+.how .shell{padding:5rem 1.25rem}
+@media (min-width:640px){.how .shell{padding-inline:2rem}}
+@media (min-width:1024px){.how .shell{padding-block:7rem}}
+.how .h2{margin:1.25rem 0 3rem;max-width:16ch}
+@media (min-width:640px){.how .h2{margin-bottom:3.5rem}}
+.srow{border-top:1px solid var(--line)}
+.srow:first-child{border-top:0}
+.srow-in{display:flex;align-items:center;gap:1rem;border-radius:1.25rem;padding:1.5rem;background:rgba(241,240,238,0)}
+@media (min-width:640px){.srow-in{gap:1.5rem;padding-block:2rem}}
+.srow .n{width:1.75rem;font-size:.875rem;font-weight:500;color:rgba(17,17,17,.4)}
+@media (min-width:640px){.srow .n{width:2.5rem}}
+.srow h3{flex:1;font-size:1.5rem;font-weight:500;letter-spacing:-.01em}
+@media (min-width:640px){.srow h3{font-size:1.875rem}}
+@media (min-width:768px){.srow h3{font-size:2.25rem}}
+.srow p{display:none;max-width:20rem;font-size:.875rem;color:rgba(17,17,17,.55)}
+@media (min-width:1024px){.srow p{display:block}}
+.srow-badge{width:2.5rem;height:2.5rem;display:grid;place-items:center;border-radius:9999px;background:var(--accent);color:#fff;font-size:1.1rem;flex:none}
+@media (min-width:640px){.srow-badge{width:3rem;height:3rem}}
+.srow-badge .i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.srow-desc-m{display:block;margin-top:.5rem;font-size:.8125rem;font-weight:400;letter-spacing:0;color:rgba(17,17,17,.55);line-height:1.4}
+@media (min-width:1024px){.srow-desc-m{display:none}}
+
+/* ---------- facts ---------- */
+.facts .shell{padding:0 1.25rem 5rem}
+@media (min-width:640px){.facts .shell{padding-inline:2rem}}
+@media (min-width:1024px){.facts .shell{padding-bottom:7rem}}
+.facts-panel{border-radius:2rem;background:radial-gradient(70% 80% at 100% 0%,rgba(210,22,39,.35),transparent 70%),#0a0a0a;padding:3rem 1.5rem;color:#fff;--y:40px;--s:.99}
+@media (min-width:640px){.facts-panel{padding:4rem 2rem}}
+@media (min-width:768px){.facts-panel{padding-inline:4rem}}
+.facts-panel .h2{margin-top:1rem;max-width:20ch;font-size:1.875rem;font-weight:500;letter-spacing:-.01em}
+@media (min-width:768px){.facts-panel .h2{font-size:2.25rem}}
+.fgrid{margin-top:3.5rem;display:grid;grid-template-columns:repeat(2,1fr);column-gap:2rem;row-gap:3rem}
+@media (min-width:1024px){.fgrid{grid-template-columns:repeat(4,1fr)}}
+.fnum{font-size:3rem;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+@media (min-width:640px){.fnum{font-size:3.75rem}}
+@media (min-width:768px){.fnum{font-size:4.5rem}}
+.fnum small{font-size:inherit;color:var(--accent-from)}
+.flab{margin-top:.75rem;font-size:.875rem;color:rgba(255,255,255,.55)}
+
+/* ---------- faq ---------- */
+.faq .shell{padding:0 1.25rem 5rem;max-width:62rem}
+@media (min-width:640px){.faq .shell{padding-inline:2rem}}
+@media (min-width:1024px){.faq .shell{padding-bottom:7rem}}
+.faq .h2{margin:1.25rem 0 2.5rem}
+.faq details{border-top:1px solid var(--line)}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.5rem 0;font-size:1.125rem;font-weight:500;cursor:pointer;list-style:none}
+@media (min-width:640px){.faq summary{font-size:1.375rem}}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";flex:none;width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:9999px;background:var(--surface);font-size:1.25rem;font-weight:400;transition:transform .3s,background .3s,color .3s}
+.faq details[open] summary::after{transform:rotate(45deg);background:var(--accent);color:#fff}
+.faq details p{max-width:42rem;padding:0 3rem 1.5rem 0;font-size:.9375rem;line-height:1.55;color:rgba(17,17,17,.6)}
+
+/* ---------- footer ---------- */
+.footer{position:relative;overflow:hidden;border-radius:2rem 2rem 0 0;background:#0a0a0a;color:#fff}
+.footer .shell{position:relative;z-index:10;padding-top:5rem;padding-bottom:2.5rem}
+@media (min-width:1024px){.footer .shell{padding-top:6rem}}
+.fcta{display:flex;flex-direction:column;gap:2rem;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:4rem}
+@media (min-width:1024px){.fcta{flex-direction:row;align-items:flex-end;justify-content:space-between}}
+.fcta .h2{max-width:16ch}
+@media (min-width:768px){.fcta .h2{font-size:3.75rem}}
+.fcols{display:grid;grid-template-columns:1fr;gap:3rem;padding-block:4rem}
+@media (min-width:768px){.fcols{grid-template-columns:1fr 1fr}}
+@media (min-width:1024px){.fcols{grid-template-columns:2fr 1fr 1fr}}
+.fcols .brand{margin-bottom:1rem}
+.fcols .tag{max-width:20rem;font-size:.875rem;color:rgba(255,255,255,.55);line-height:1.5}
+.fcols h4{margin-bottom:1rem;font-size:.75rem;font-weight:400;text-transform:uppercase;letter-spacing:.025em;color:rgba(255,255,255,.4)}
+.fcols li{margin-bottom:.75rem;font-size:.875rem}
+.fcols li.txt{color:rgba(255,255,255,.7)}
+.flink{display:inline-flex}
+.legal{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid rgba(255,255,255,.1);padding-top:2rem;font-size:.75rem;color:rgba(255,255,255,.45);text-align:center}
+@media (min-width:640px){.legal{flex-direction:row;text-align:left}}
+.fwm{position:absolute;inset-inline:0;bottom:-1.5rem;z-index:0;text-align:center;pointer-events:none;user-select:none;font-weight:700;line-height:1;font-size:13rem;color:rgba(255,255,255,.05);white-space:nowrap}
+
+/* ---------- menu overlay ---------- */
+#menu{position:fixed;inset:0;z-index:115;display:flex;flex-direction:column;background:#0a0a0a;color:#fff;opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+#menu.open{opacity:1;visibility:visible;transition:opacity .3s}
+#menu>.shell{width:100%}
+.menu-top{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.25rem}
+@media (min-width:640px){.menu-top{padding:1.5rem 2rem}}
+.menu-top .closebtn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid rgba(255,255,255,.15);border-radius:.875rem;padding:.5rem 1rem;font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.7);transition:border-color .2s,color .2s}
+.menu-top .closebtn:hover{border-color:rgba(255,255,255,.4);color:#fff}
+.menu-nav{flex:1;display:flex;flex-direction:column;justify-content:center}
+.menu-nav ul{display:flex;flex-direction:column;gap:.25rem}
+.menu-nav button{display:flex;align-items:baseline;gap:1rem;padding-block:.5rem;text-align:left;font-size:2.25rem;font-weight:600;letter-spacing:-.02em;transform:translateY(1rem);opacity:0;transition:all .5s ease-out;transition-delay:calc(var(--i)*45ms + 80ms)}
+@media (min-width:640px){.menu-nav button{font-size:3.75rem}}
+#menu.open .menu-nav button{transform:none;opacity:1}
+.menu-nav .ix{font-size:1rem;font-weight:400;color:rgba(255,255,255,.3);transition:color .3s}
+.menu-nav .lb{color:rgba(255,255,255,.7);transition:color .3s}
+.menu-nav button:hover .ix{color:var(--accent-from)}
+.menu-nav button:hover .lb{color:#fff}
+.menu-bot{display:flex;flex-direction:column;gap:.75rem;border-top:1px solid rgba(255,255,255,.1);padding-block:1.5rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.025em;color:rgba(255,255,255,.45)}
+@media (min-width:640px){.menu-bot{flex-direction:row;justify-content:space-between}}
+.menu-bot .lang{align-self:flex-start;border:1px solid rgba(255,255,255,.15);border-radius:.875rem}
+</style>
+<script>
+/* failsafe: never leave the loader up if the module script fails */
+setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader'); if(l) l.style.display='none'; document.documentElement.classList.add('ready'); document.querySelectorAll('.rv,.line,.word-in').forEach(function(e){e.classList.add('in')}); } }, 7000);
+</script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<!-- ============ LOADER ============ -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="loader-c">
+    <div class="loader-brand"><img class="logo" src="assets/icon-512.png" alt="" width="36" height="36" /> StockPilot</div>
+    <p class="loader-tag" data-i18n="loader.tag">Your command center for the stock market.</p>
+  </div>
+  <div class="loader-bar">
+    <div class="loader-track"><div class="loader-fill" id="lfill"></div></div>
+    <div class="loader-row"><span data-i18n="loader.loading">Loading</span><b id="lnum">000</b></div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="header" id="top">
+  <div class="shell">
+    <button class="brand" data-go="home" data-sp="s:1.04" aria-label="StockPilot">
+      <img class="logo" src="assets/icon-512.png" alt="" width="24" height="24" />
+      <span>StockPilot</span>
+    </button>
+    <nav aria-label="Primary">
+      <ul class="nav">
+        <li><button data-go="home" aria-current="page"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.home">Home</span></button></li>
+        <li><button data-go="features"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.features">Features</span></button></li>
+        <li><button data-go="how"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.how">How it works</span></button></li>
+        <li><button data-go="facts"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.facts">Facts</span></button></li>
+        <li><button data-go="faq"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.faq">FAQ</span></button></li>
+      </ul>
+    </nav>
+    <div class="header-r">
+      <div class="clock glassbtn" aria-hidden="true">
+        <span class="lbl" data-i18n="clock.label">Warsaw time</span>
+        <span class="tm js-time">9:41am</span><span class="sep">•</span><span class="dt js-date">12 October, 2026</span>
+      </div>
+      <div class="lang glassbtn js-lang" role="group" aria-label="Language">
+        <button data-lang="en" aria-pressed="true">EN</button><button data-lang="pl" aria-pressed="false">PL</button>
+      </div>
+      <button class="menubtn glassbtn" id="menu-open" aria-haspopup="dialog" aria-controls="menu">
+        <span data-sp="s:1.05" data-sp-trigger="button">
+          <svg class="i ico-s" viewBox="0 0 24 24" style="font-size:.875rem"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <span class="mt" data-i18n="nav.menu">Menu</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <canvas id="liquid" aria-hidden="true"></canvas>
+  <div class="hero-vig" aria-hidden="true"></div>
+  <div class="watermark rv" data-gate aria-hidden="true">STOCKPILOT</div>
+
+  <div class="shell hero-grid">
+    <div class="hero-l">
+      <p class="eyebrow rv" data-gate style="--y:10px;--d:200ms" data-i18n="hero.eyebrow">Coming soon to the App Store</p>
+      <h1 class="h1" data-lines="hero.h1" data-gate style="--d:250ms;--ls:120ms"></h1>
+      <p class="hero-sub rv" data-gate style="--y:14px;--d:500ms" data-i18n="hero.sub"></p>
+      <div class="hero-chips rv" data-gate style="--y:14px;--d:650ms">
+        <span>iOS 17+</span><span data-i18n="hero.chip2">No accounts</span><span data-i18n="hero.chip3">400+ GPW companies</span>
+      </div>
+      <div class="cta-row rv" data-gate style="--y:14px;--d:750ms">
+        <div class="store" role="img" aria-label="Coming soon on the App Store" data-aria="store.aria" data-sp="s:1.04">
+          <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          <span><small data-i18n="store.small">Coming soon on the</small><b>App Store</b></span>
+        </div>
+        <button class="pill glass arrow" data-go="features" data-sp="s:1.04">
+          <span data-i18n="hero.cta2">See features</span>
+          <span class="pill-badge"><svg class="i ico-s" viewBox="0 0 24 24" data-sp="y:3;t:320,18" data-sp-trigger=".pill"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-r">
+      <div class="phones rv" data-gate style="--y:24px;--d:350ms" id="phones">
+        <div class="phone p2 phone-wrap" data-depth="-10"><img src="assets/announcements.jpg" alt="StockPilot announcements feed" width="380" height="826" loading="eager" /></div>
+        <div class="phone p1 phone-wrap" data-depth="12"><img src="assets/watchlist.jpg" alt="StockPilot watchlist" width="380" height="826" fetchpriority="high" /></div>
+        <div class="tickcard" id="tick">
+          <div class="row" id="tick-row">
+            <div class="tile"><img src="assets/icon-512.png" alt="" width="80" height="80" /></div>
+            <div class="pn">
+              <div class="tick-slot"><div id="tick-item"><p class="tick-cap"></p><p class="tick-title"></p></div></div>
+              <div class="tick-foot">
+                <div class="dots" id="tick-dots"><i></i><i></i><i></i></div>
+                <div class="arrows">
+                  <button id="tick-prev" aria-label="Previous"><svg class="i ico-s" viewBox="0 0 24 24" style="transform:rotate(180deg)"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                  <button id="tick-next" aria-label="Next"><svg class="i ico-s" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status rv" data-gate style="--y:0px;--d:900ms">
+    <div class="shell"><span data-i18n="status.l">Built for GPW investors</span><span class="mid" data-i18n="status.m">ESPI & EBI filings, polled every 3 minutes</span><span style="display:inline-flex;gap:.5rem"><span data-i18n="status.r">Scroll to explore</span> ↓</span></div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about" id="about">
+  <div class="shell">
+    <div class="about-l">
+      <p class="eyebrow" style="position:relative" data-i18n="about.eyebrow">The app</p>
+      <img class="about-icon rv" style="--y:20px" src="assets/icon-512.png" alt="StockPilot app icon" width="224" height="224" loading="lazy" />
+      <div class="about-cap rv" style="--y:12px">
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.75" width="10" height="18.5" rx="2.4"/><path d="M10.5 18.5h3"/></svg>
+        <span data-i18n="about.cap">Native iOS, built with SwiftUI.</span>
+      </div>
+    </div>
+    <div class="about-r">
+      <h2 class="statement" data-words="about.statement"></h2>
+      <div class="about-foot rv" style="--y:12px;--d:200ms">
+        <p data-i18n="about.foot">Launching on iPhone.</p>
+        <button class="pill outline arrow" data-go="features" data-sp="s:1.04"><span data-i18n="hero.cta2">See features</span><span class="pill-badge"><svg class="i ico-s" viewBox="0 0 24 24" data-sp="x:3;t:320,18" data-sp-trigger=".pill"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BAND ============ -->
+<section aria-hidden="true">
+  <ul class="shell band">
+    <li class="rv" style="--y:28px"><div class="tile light" data-sp="s:1.03;t:300,18" data-i18n="band.1">Track</div></li>
+    <li class="rv" style="--y:28px;--d:120ms"><div class="tile accent" data-sp="s:1.03;t:300,18" data-i18n="band.2">Read</div></li>
+    <li class="rv" style="--y:28px;--d:240ms"><div class="tile dark" data-sp="s:1.03;t:300,18"><svg class="i ico-s" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></li>
+    <li class="rv" style="--y:28px;--d:360ms"><div class="tile ghost" data-sp="s:1.03;t:300,18" data-i18n="band.3">Plan</div></li>
+  </ul>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features" id="features">
+  <div class="shell">
+    <div class="center">
+      <p class="eyebrow boxed rv" data-i18n="feat.eyebrow">Features</p>
+      <h2 class="h2" data-lines="feat.h2" style="--d:120ms"></h2>
+    </div>
+    <ul class="cards">
+      <li class="rv" style="--y:48px"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
+        <div class="card-meta"><span data-i18n="feat.1.cat">Watchlist</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">01</span></div>
+        <h3 data-i18n="feat.1.name">Watchlist</h3><p data-i18n="feat.1.desc"></p>
+        <div class="tags"><span class="chip" data-i18n="feat.1.t1">400+ tickers</span><span class="chip" data-i18n="feat.1.t2">Live quotes</span></div>
+        <div class="peek"><div class="phone"><img src="assets/watchlist.jpg" alt="Watchlist screen" width="380" height="826" loading="lazy" /></div></div>
+      </article></li>
+      <li class="rv" style="--y:48px;--d:90ms"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
+        <div class="card-meta"><span data-i18n="feat.2.cat">Announcements</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">02</span></div>
+        <h3 data-i18n="feat.2.name">Announcements</h3><p data-i18n="feat.2.desc"></p>
+        <div class="tags"><span class="chip">ESPI</span><span class="chip">EBI</span><span class="chip" data-i18n="feat.2.t3">Unread markers</span></div>
+        <div class="peek"><div class="phone"><img src="assets/announcements.jpg" alt="Announcements screen" width="380" height="826" loading="lazy" /></div></div>
+      </article></li>
+      <li class="rv" style="--y:48px"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
+        <div class="card-meta"><span data-i18n="feat.3.cat">Earnings calendar</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">03</span></div>
+        <h3 data-i18n="feat.3.name">Earnings calendar</h3><p data-i18n="feat.3.desc"></p>
+        <div class="tags"><span class="chip" data-i18n="feat.3.t1">Month view</span><span class="chip" data-i18n="feat.3.t2">Auto-filled</span></div>
+        <div class="peek"><div class="phone"><img src="assets/calendar.jpg" alt="Earnings calendar screen" width="380" height="826" loading="lazy" /></div></div>
+      </article></li>
+      <li class="rv" style="--y:48px;--d:90ms"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
+        <div class="card-meta"><span data-i18n="feat.4.cat">Company detail</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">04</span></div>
+        <h3 data-i18n="feat.4.name">Company detail</h3><p data-i18n="feat.4.desc"></p>
+        <div class="tags"><span class="chip" data-i18n="feat.4.t1">Per-company mute</span><span class="chip" data-i18n="feat.4.t2">Notifications</span></div>
+        <div class="peek"><div class="phone"><img src="assets/company-detail.jpg" alt="Company detail screen" width="380" height="826" loading="lazy" /></div></div>
+      </article></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="how" id="how">
+  <div class="shell">
+    <p class="eyebrow rv" style="--y:10px" data-i18n="how.eyebrow">How it works</p>
+    <h2 class="h2" data-lines="how.h2" style="--d:120ms"></h2>
+    <ul>
+      <li class="srow rv"><div class="srow-in" data-spring-row><span class="n">01</span><h3><span data-i18n="how.1.t">Pick your companies</span><span class="srow-desc-m" data-i18n="how.1.d"></span></h3><p data-i18n="how.1.d"></p><span class="srow-badge" data-sp="x:5;t:300,18" data-sp-trigger=".srow-in"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l2.6 5.5 6 .9-4.4 4.2 1 6L12 16.6 6.8 19.6l1-6L3.4 9.4l6-.9L12 3z"/></svg></span></div></li>
+      <li class="srow rv" style="--d:80ms"><div class="srow-in" data-spring-row><span class="n">02</span><h3><span data-i18n="how.2.t">Filings as they land</span><span class="srow-desc-m" data-i18n="how.2.d"></span></h3><p data-i18n="how.2.d"></p><span class="srow-badge" data-sp="x:5;t:300,18" data-sp-trigger=".srow-in"><svg class="i" viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zM15 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></span></div></li>
+      <li class="srow rv" style="--d:160ms"><div class="srow-in" data-spring-row><span class="n">03</span><h3><span data-i18n="how.3.t">Never miss a report</span><span class="srow-desc-m" data-i18n="how.3.d"></span></h3><p data-i18n="how.3.d"></p><span class="srow-badge" data-sp="x:5;t:300,18" data-sp-trigger=".srow-in"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span></div></li>
+      <li class="srow rv" style="--d:240ms"><div class="srow-in" data-spring-row><span class="n">04</span><h3><span data-i18n="how.4.t">Private by design</span><span class="srow-desc-m" data-i18n="how.4.d"></span></h3><p data-i18n="how.4.d"></p><span class="srow-badge" data-sp="x:5;t:300,18" data-sp-trigger=".srow-in"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ FACTS ============ -->
+<section class="facts" id="facts">
+  <div class="shell">
+    <div class="facts-panel rv">
+      <p class="eyebrow light" data-i18n="facts.eyebrow">By the numbers</p>
+      <h2 class="h2" data-lines="facts.h2" style="--d:120ms"></h2>
+      <ul class="fgrid">
+        <li class="rv" style="--y:20px"><div class="fnum"><span data-count="400">0</span><small>+</small></div><p class="flab" data-i18n="facts.1">GPW companies to follow</p></li>
+        <li class="rv" style="--y:20px;--d:90ms"><div class="fnum"><span data-count="3">0</span></div><p class="flab" data-i18n="facts.2">minutes between ESPI/EBI checks</p></li>
+        <li class="rv" style="--y:20px;--d:180ms"><div class="fnum"><span>0</span></div><p class="flab" data-i18n="facts.3">accounts required</p></li>
+        <li class="rv" style="--y:20px;--d:270ms"><div class="fnum"><span data-count="17">0</span><small>+</small></div><p class="flab" data-i18n="facts.4">minimum iOS version</p></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="shell">
+    <p class="eyebrow rv" style="--y:10px" data-i18n="faq.eyebrow">FAQ</p>
+    <h2 class="h2" data-lines="faq.h2" style="--d:120ms"></h2>
+    <div class="rv">
+      <details><summary data-i18n="faq.1.q"></summary><p data-i18n="faq.1.a"></p></details>
+      <details><summary data-i18n="faq.2.q"></summary><p data-i18n="faq.2.a"></p></details>
+      <details><summary data-i18n="faq.3.q"></summary><p data-i18n="faq.3.a"></p></details>
+      <details><summary data-i18n="faq.4.q"></summary><p data-i18n="faq.4.a"></p></details>
+      <details><summary data-i18n="faq.5.q"></summary><p data-i18n="faq.5.a"></p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="shell">
+    <div class="fcta">
+      <h2 class="h2" data-lines="foot.h2" style="--ls:100ms"></h2>
+      <div class="store on-dark rv" style="--y:14px;--d:300ms" role="img" aria-label="Coming soon on the App Store" data-aria="store.aria" data-sp="s:1.04">
+        <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+        <span><small data-i18n="store.small">Coming soon on the</small><b>App Store</b></span>
+      </div>
+    </div>
+    <div class="fcols">
+      <div>
+        <div class="brand"><img class="logo" src="assets/icon-512.png" alt="" width="24" height="24" /> StockPilot</div>
+        <p class="tag" data-i18n="foot.tag"></p>
+      </div>
+      <div>
+        <h4 data-i18n="foot.c1">Product</h4>
+        <ul>
+          <li><button class="flink" data-go="features"><span data-sp="x:4;o:.65-1;t:320,22" data-sp-trigger="button" data-i18n="nav.features">Features</span></button></li>
+          <li><button class="flink" data-go="how"><span data-sp="x:4;o:.65-1;t:320,22" data-sp-trigger="button" data-i18n="nav.how">How it works</span></button></li>
+          <li><button class="flink" data-go="facts"><span data-sp="x:4;o:.65-1;t:320,22" data-sp-trigger="button" data-i18n="nav.facts">Facts</span></button></li>
+          <li><button class="flink" data-go="faq"><span data-sp="x:4;o:.65-1;t:320,22" data-sp-trigger="button">FAQ</span></button></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i18n="foot.c2">Under the hood</h4>
+        <ul>
+          <li class="txt">SwiftUI · SwiftData</li>
+          <li class="txt" data-i18n="foot.d1">ESPI/EBI filings via bankier.pl</li>
+          <li class="txt" data-i18n="foot.d2">Quotes via Yahoo Finance</li>
+          <li><a class="flink" href="https://github.com/KDominikk00/StockPilot" target="_blank" rel="noopener"><span data-sp="x:4;o:.65-1;t:320,22" data-sp-trigger="a">GitHub ↗</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span data-i18n="foot.legal">© 2026 StockPilot. Data is informational and not investment advice.</span>
+      <span data-i18n="foot.apple">App Store is a service mark of Apple Inc.</span>
+    </div>
+  </div>
+  <div class="fwm" aria-hidden="true">STOCKPILOT</div>
+</footer>
+
+<!-- ============ MENU ============ -->
+<div id="menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="shell menu-top">
+    <div class="brand"><img class="logo" src="assets/icon-512.png" alt="" width="24" height="24" /> StockPilot</div>
+    <button class="closebtn" id="menu-close"><svg class="i ico-s" viewBox="0 0 24 24" style="font-size:.875rem"><path d="M4 4l16 16M20 4 4 20"/></svg> <span data-i18n="nav.close">Close</span></button>
+  </div>
+  <nav class="shell menu-nav" aria-label="Menu">
+    <ul>
+      <li><button data-go="home" style="--i:0"><span class="ix">01</span><span class="lb" data-i18n="nav.home">Home</span></button></li>
+      <li><button data-go="features" style="--i:1"><span class="ix">02</span><span class="lb" data-i18n="nav.features">Features</span></button></li>
+      <li><button data-go="how" style="--i:2"><span class="ix">03</span><span class="lb" data-i18n="nav.how">How it works</span></button></li>
+      <li><button data-go="facts" style="--i:3"><span class="ix">04</span><span class="lb" data-i18n="nav.facts">Facts</span></button></li>
+      <li><button data-go="faq" style="--i:4"><span class="ix">05</span><span class="lb">FAQ</span></button></li>
+    </ul>
+  </nav>
+  <div class="shell menu-bot">
+    <span><span data-i18n="clock.label">Warsaw time</span> — <span class="js-time">9:41am</span></span>
+    <div class="lang js-lang" role="group" aria-label="Language"><button data-lang="en" aria-pressed="true">EN</button><button data-lang="pl" aria-pressed="false">PL</button></div>
+    <span data-i18n="store.menu">Coming soon on the App Store</span>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "lenis": "https://unpkg.com/lenis@1.3.23/dist/lenis.mjs" } }
+</script>
+<script type="module">
+window.__sp = true;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const root = document.documentElement;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+/* ---------- adaptive grid (scale up above 1920) ---------- */
+function applyAdaptiveGrid() {
+  const FONT_BASE = 16, baseWidth = 1920, coef = 0.6666;
+  const widthReduction = ((baseWidth - window.innerWidth) / baseWidth) * 100;
+  const size = FONT_BASE - (FONT_BASE * (widthReduction * coef)) / 100;
+  if (size > FONT_BASE) root.style.fontSize = size + 'px';
+  else root.style.removeProperty('font-size');
+}
+applyAdaptiveGrid(); addEventListener('resize', applyAdaptiveGrid);
+
+/* ---------- Lenis (optional: page works without it) ---------- */
+let lenis = null;
+window.scrollTo(0, 0);
+try {
+  const { default: Lenis } = await import('lenis');
+  lenis = new Lenis({ smoothWheel: true });
+  const raf = t => { lenis.raf(t); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+} catch (e) { /* native scrolling */ }
+const stopScroll = () => { lenis && lenis.stop(); Object.assign(root.style, { position: 'relative', overflow: 'hidden', height: '100%' }); };
+const startScroll = () => { lenis && lenis.start(); ['position', 'overflow', 'height'].forEach(p => root.style.removeProperty(p)); };
+function goTo(id) {
+  const el = document.getElementById(id); if (!el) return;
+  if (lenis) lenis.scrollTo(el, { offset: 0, duration: 1.2 });
+  else window.scrollTo({ top: el.getBoundingClientRect().top + pageYOffset, behavior: 'smooth' });
+}
+
+/* ---------- spring (react-spring stand-in) ---------- */
+function makeSpring(apply, tension = 320, friction = 18) {
+  let x = 0, v = 0, target = 0, raf = 0, last = 0;
+  const tick = now => {
+    let dt = Math.min((now - last) / 1000, 1 / 30); last = now;
+    for (let n = Math.max(1, Math.round(dt * 120)), h = dt / n; n--;) {
+      const a = tension * (target - x) - friction * v; v += a * h; x += v * h;
+    }
+    apply(x);
+    if (Math.abs(target - x) < .001 && Math.abs(v) < .001) { x = target; apply(x); raf = 0; return; }
+    raf = requestAnimationFrame(tick);
+  };
+  return to => { target = to; if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+}
+function bindSpring(el, trigger, apply, t, f) {
+  const go = makeSpring(apply, t, f);
+  trigger.addEventListener('pointerenter', () => go(1));
+  trigger.addEventListener('pointerleave', () => go(0));
+}
+if (canHover && !reduced) {
+  $$('[data-sp]').forEach(el => {
+    const cfg = Object.fromEntries(el.dataset.sp.split(';').map(s => s.split(':')));
+    const trigger = (el.dataset.spTrigger && el.closest(el.dataset.spTrigger)) || el;
+    const [t, f] = (cfg.t || '320,18').split(',').map(Number);
+    const x = +cfg.x || 0, y = +cfg.y || 0, s = cfg.s ? +cfg.s : 1, r = +cfg.r || 0;
+    const [o0, o1] = cfg.o ? cfg.o.split('-').map(Number) : [1, 1];
+    bindSpring(el, trigger, p => {
+      el.style.transform = `translate3d(${x * p}px,${y * p}px,0) scale(${1 + (s - 1) * p}) rotate(${r * p}deg)`;
+      if (cfg.o) el.style.opacity = o0 + (o1 - o0) * p;
+    }, t, f);
+  });
+  $$('[data-spring-row]').forEach(el => bindSpring(el, el, p => {
+    const rem = parseFloat(getComputedStyle(root).fontSize);
+    el.style.background = `rgba(241,240,238,${Math.max(0, Math.min(1, p))})`;
+    el.style.paddingLeft = (1.5 + .5 * p) * rem + 'px';
+    el.style.paddingRight = (1.5 - .25 * p) * rem + 'px';
+  }, 240, 26));
+}
+
+/* ---------- i18n ---------- */
+const I18N = {
+  en: {
+    'skip': 'Skip to content',
+    'meta.title': 'StockPilot — Your command center for the Warsaw Stock Exchange',
+    'meta.desc': 'StockPilot is a native iOS app for Warsaw Stock Exchange investors: a watchlist, every ESPI/EBI filing and an earnings calendar in one place. Coming soon to the App Store.',
+    'loader.tag': 'Your command center for the stock market.', 'loader.loading': 'Loading',
+    'nav.home': 'Home', 'nav.features': 'Features', 'nav.how': 'How it works', 'nav.facts': 'Facts', 'nav.menu': 'Menu', 'nav.close': 'Close',
+    'clock.label': 'Warsaw time',
+    'hero.eyebrow': 'Coming soon to the App Store',
+    'hero.h1': ['Command center', 'for the Warsaw', 'Stock Exchange.'],
+    'hero.sub': 'A native iOS companion for investors in Warsaw Stock Exchange companies: your watchlist, every ESPI/EBI filing and the earnings calendar, in one place.',
+    'hero.chip2': 'No accounts', 'hero.chip3': '400+ GPW companies', 'hero.cta2': 'See features',
+    'store.small': 'Coming soon on the', 'store.aria': 'Coming soon on the App Store', 'store.menu': 'Coming soon on the App Store',
+    'tick': [['Watchlist', 'Track every ticker.'], ['Announcements', 'Filings as they land.'], ['Earnings calendar', 'Reports, on your calendar.']],
+    'status.l': 'Built for GPW investors', 'status.m': 'ESPI & EBI filings, polled every 3 minutes', 'status.r': 'Scroll to explore',
+    'about.eyebrow': 'The app', 'about.cap': 'Native iOS, built with SwiftUI.',
+    'about.statement': 'StockPilot follows the companies you care about on the GPW and <em>surfaces every ESPI/EBI filing and report date in one place, with no account and no noise.</em>',
+    'about.foot': 'Launching on iPhone.',
+    'band.1': 'Track', 'band.2': 'Read', 'band.3': 'Plan',
+    'feat.eyebrow': 'Features', 'feat.h2': "What's inside",
+    'feat.1.cat': 'Watchlist', 'feat.1.name': 'Watchlist', 'feat.1.desc': 'Pick from the full GPW main market and see live prices and the daily change at a glance.', 'feat.1.t1': '400+ tickers', 'feat.1.t2': 'Live quotes',
+    'feat.2.cat': 'Announcements', 'feat.2.name': 'Announcements', 'feat.2.desc': 'Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge.', 'feat.2.t3': 'Unread markers',
+    'feat.3.cat': 'Earnings calendar', 'feat.3.name': 'Earnings calendar', 'feat.3.desc': 'A month view plus an upcoming list, filled in automatically with report publication dates.', 'feat.3.t1': 'Month view', 'feat.3.t2': 'Auto-filled',
+    'feat.4.cat': 'Company detail', 'feat.4.name': 'Company detail', 'feat.4.desc': 'Quote, filings and report dates for a single company, with a per-company mute for when you want quiet.', 'feat.4.t1': 'Per-company mute', 'feat.4.t2': 'Notifications',
+    'how.eyebrow': 'How it works', 'how.h2': 'Simple by design',
+    'how.1.t': 'Pick your companies', 'how.1.d': 'Search ~400 GPW tickers and add them to your watchlist.',
+    'how.2.t': 'Filings as they land', 'how.2.d': 'A backend watches ESPI/EBI every 3 minutes, so your feed stays fresh.',
+    'how.3.t': 'Never miss a report', 'how.3.d': 'Report publication dates land in your calendar automatically.',
+    'how.4.t': 'Private by design', 'how.4.d': 'No accounts. What you follow stays on your device.',
+    'facts.eyebrow': 'By the numbers', 'facts.h2': 'The facts, not the hype.',
+    'facts.1': 'GPW companies to follow', 'facts.2': 'minutes between ESPI/EBI checks', 'facts.3': 'accounts required', 'facts.4': 'minimum iOS version',
+    'faq.eyebrow': 'FAQ', 'faq.h2': 'Questions',
+    'faq.1.q': 'When does it launch?', 'faq.1.a': "Soon, on the App Store for iPhone. There's no date yet, so check back here.",
+    'faq.2.q': 'Is it free?', 'faq.2.a': "Pricing hasn't been announced yet.",
+    'faq.3.q': 'Do I need an account?', 'faq.3.a': 'No. Everything you pick lives on your device.',
+    'faq.4.q': 'Where does the data come from?', 'faq.4.a': 'Filings and report dates come from bankier.pl, and quotes come from Yahoo Finance. Both are third-party sources.',
+    'faq.5.q': 'Is this investment advice?', 'faq.5.a': 'No. StockPilot is informational only and is not investment advice.',
+    'foot.h2': ['Coming soon to', 'the App Store.'], 'foot.tag': 'Your command center for the Warsaw Stock Exchange.',
+    'foot.c1': 'Product', 'foot.c2': 'Under the hood', 'foot.d1': 'ESPI/EBI filings via bankier.pl', 'foot.d2': 'Quotes via Yahoo Finance',
+    'foot.legal': '© 2026 StockPilot. Data is informational and not investment advice.', 'foot.apple': 'App Store is a service mark of Apple Inc.'
+  },
+  pl: {
+    'skip': 'Przejdź do treści',
+    'meta.title': 'StockPilot — Twoje centrum dowodzenia na giełdzie',
+    'meta.desc': 'StockPilot to natywna aplikacja na iOS dla inwestorów GPW: watchlista, wszystkie komunikaty ESPI/EBI i kalendarz wyników w jednym miejscu. Wkrótce w App Store.',
+    'loader.tag': 'Twoje centrum dowodzenia na giełdzie.', 'loader.loading': 'Ładowanie',
+    'nav.home': 'Start', 'nav.features': 'Funkcje', 'nav.how': 'Jak to działa', 'nav.facts': 'Fakty', 'nav.menu': 'Menu', 'nav.close': 'Zamknij',
+    'clock.label': 'Czas w Warszawie',
+    'hero.eyebrow': 'Wkrótce w App Store',
+    'hero.h1': ['Twoje centrum', 'dowodzenia', 'na giełdzie.'],
+    'hero.sub': 'Natywna aplikacja na iOS dla inwestorów spółek z GPW: watchlista, wszystkie komunikaty ESPI/EBI i kalendarz wyników w jednym miejscu.',
+    'hero.chip2': 'Bez konta', 'hero.chip3': '400+ spółek GPW', 'hero.cta2': 'Zobacz funkcje',
+    'store.small': 'Wkrótce w', 'store.aria': 'Wkrótce w App Store', 'store.menu': 'Wkrótce w App Store',
+    'tick': [['Watchlista', 'Śledź każdą spółkę.'], ['Komunikaty', 'Na bieżąco, od razu.'], ['Kalendarz wyników', 'Raporty w kalendarzu.']],
+    'status.l': 'Dla inwestorów GPW', 'status.m': 'Komunikaty ESPI i EBI co 3 minuty', 'status.r': 'Przewiń',
+    'about.eyebrow': 'Aplikacja', 'about.cap': 'Natywnie na iOS, zbudowane w SwiftUI.',
+    'about.statement': 'StockPilot śledzi spółki z GPW, które Cię interesują, i <em>zbiera w jednym miejscu każdy komunikat ESPI/EBI oraz termin publikacji wyników, bez konta i bez szumu.</em>',
+    'about.foot': 'Premiera na iPhone.',
+    'band.1': 'Śledź', 'band.2': 'Czytaj', 'band.3': 'Planuj',
+    'feat.eyebrow': 'Funkcje', 'feat.h2': 'Co w środku',
+    'feat.1.cat': 'Watchlista', 'feat.1.name': 'Watchlista', 'feat.1.desc': 'Wybierz spółki z całego rynku głównego GPW i zobacz bieżące kursy oraz dzienną zmianę.', 'feat.1.t1': '400+ spółek', 'feat.1.t2': 'Notowania',
+    'feat.2.cat': 'Komunikaty', 'feat.2.name': 'Komunikaty', 'feat.2.desc': 'Oficjalne komunikaty ESPI/EBI spółek, które obserwujesz, od najnowszych, ze znacznikami nieprzeczytanych i plakietką na zakładce.', 'feat.2.t3': 'Nieprzeczytane',
+    'feat.3.cat': 'Kalendarz wyników', 'feat.3.name': 'Kalendarz wyników', 'feat.3.desc': 'Widok miesiąca i lista nadchodzących wydarzeń, automatycznie uzupełniane datami publikacji raportów.', 'feat.3.t1': 'Widok miesiąca', 'feat.3.t2': 'Automatycznie',
+    'feat.4.cat': 'Szczegóły spółki', 'feat.4.name': 'Szczegóły spółki', 'feat.4.desc': 'Kurs, komunikaty i terminy raportów jednej spółki, z wyciszaniem pojedynczych spółek, gdy chcesz spokoju.', 'feat.4.t1': 'Wyciszanie spółek', 'feat.4.t2': 'Powiadomienia',
+    'how.eyebrow': 'Jak to działa', 'how.h2': 'Proste z założenia',
+    'how.1.t': 'Wybierz spółki', 'how.1.d': 'Wyszukaj ponad 400 spółek z GPW i dodaj je do watchlisty.',
+    'how.2.t': 'Komunikaty na bieżąco', 'how.2.d': 'Serwer sprawdza ESPI/EBI co 3 minuty, więc Twój feed jest zawsze aktualny.',
+    'how.3.t': 'Żaden raport nie umknie', 'how.3.d': 'Terminy publikacji raportów trafiają do kalendarza automatycznie.',
+    'how.4.t': 'Prywatne z założenia', 'how.4.d': 'Bez kont. To, co obserwujesz, zostaje na Twoim urządzeniu.',
+    'facts.eyebrow': 'W liczbach', 'facts.h2': 'Fakty, nie slogany.',
+    'facts.1': 'spółek GPW do obserwowania', 'facts.2': 'minuty między sprawdzeniami ESPI/EBI', 'facts.3': 'wymaganych kont', 'facts.4': 'minimalna wersja iOS',
+    'faq.eyebrow': 'FAQ', 'faq.h2': 'Pytania',
+    'faq.1.q': 'Kiedy premiera?', 'faq.1.a': 'Wkrótce, w App Store na iPhone’a. Nie mamy jeszcze daty, więc zajrzyj tu ponownie.',
+    'faq.2.q': 'Czy aplikacja jest darmowa?', 'faq.2.a': 'Cena nie została jeszcze ogłoszona.',
+    'faq.3.q': 'Czy potrzebuję konta?', 'faq.3.a': 'Nie. Wszystko, co wybierzesz, zostaje na Twoim urządzeniu.',
+    'faq.4.q': 'Skąd pochodzą dane?', 'faq.4.a': 'Komunikaty i terminy raportów pochodzą z bankier.pl, a notowania z Yahoo Finance. Oba to źródła zewnętrzne.',
+    'faq.5.q': 'Czy to porada inwestycyjna?', 'faq.5.a': 'Nie. StockPilot ma charakter wyłącznie informacyjny i nie stanowi porady inwestycyjnej.',
+    'foot.h2': ['Wkrótce w', 'App Store.'], 'foot.tag': 'Twoje centrum dowodzenia na giełdzie.',
+    'foot.c1': 'Produkt', 'foot.c2': 'Pod maską', 'foot.d1': 'Komunikaty ESPI/EBI z bankier.pl', 'foot.d2': 'Notowania z Yahoo Finance',
+    'foot.legal': '© 2026 StockPilot. Dane mają charakter informacyjny i nie stanowią porady inwestycyjnej.', 'foot.apple': 'App Store jest znakiem usługowym Apple Inc.'
+  }
+};
+let lang = 'en';
+const T = k => (I18N[lang][k] ?? I18N.en[k]);
+
+function renderLines(el) {
+  const v = T(el.dataset.lines), lines = Array.isArray(v) ? v : [v];
+  el.innerHTML = lines.map((l, i) => `<span class="line"><span class="line-inner" style="--i:${i}">${l}</span></span>`).join('');
+}
+function renderWords(el) {
+  const tpl = document.createElement('div'); tpl.innerHTML = T(el.dataset.words);
+  let i = 0; el.textContent = '';
+  const walk = (node, parent) => node.childNodes.forEach(n => {
+    if (n.nodeType === 3) {
+      n.textContent.split(/(\s+)/).forEach(w => {
+        if (!w) return;
+        if (/^\s+$/.test(w)) parent.appendChild(document.createTextNode(' '));
+        else { const s = document.createElement('span'); s.className = 'word'; s.innerHTML = `<span class="word-in" style="--i:${i++}"></span>`; s.firstChild.textContent = w; parent.appendChild(s); }
+      });
+    } else { const c = document.createElement(n.tagName.toLowerCase()); parent.appendChild(c); walk(n, c); }
+  });
+  walk(tpl, el);
+}
+function applyLang(l) {
+  lang = l; root.lang = l;
+  $$('[data-i18n]').forEach(el => { el.textContent = T(el.dataset.i18n); });
+  $$('[data-aria]').forEach(el => el.setAttribute('aria-label', T(el.dataset.aria)));
+  $$('[data-lines]').forEach(renderLines);
+  $$('[data-words]').forEach(renderWords);
+  document.title = T('meta.title');
+  $('meta[name=description]').content = T('meta.desc');
+  $$('.js-lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === l));
+  tickRender(false); tickClock();
+  try { localStorage.setItem('sp-lang', l); } catch (e) {}
+}
+
+/* ---------- clock (Warsaw time) ---------- */
+const MONTHS = { en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                 pl: ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'] };
+function tickClock() {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Warsaw', hour: 'numeric', minute: '2-digit', day: 'numeric', month: 'numeric', year: 'numeric', hour12: false })
+    .formatToParts(new Date()).map(p => [p.type, p.value]));
+  const h = +parts.hour % 24, time = `${h % 12 || 12}:${parts.minute}${h >= 12 ? 'pm' : 'am'}`;
+  const date = `${+parts.day} ${MONTHS[lang][+parts.month - 1]}${lang === 'en' ? ',' : ''} ${parts.year}`;
+  $$('.js-time').forEach(e => e.textContent = time); $$('.js-date').forEach(e => e.textContent = date);
+}
+setInterval(tickClock, 1000);
+
+/* ---------- hero ticker card ---------- */
+let ti = 0, tickBusy = false;
+function tickRender() {
+  const items = T('tick'), it = items[ti], box = $('#tick-item');
+  $('.tick-cap', box).textContent = it[0]; $('.tick-title', box).textContent = it[1];
+  $$('#tick-dots i').forEach((d, i) => d.classList.toggle('on', i === ti));
+}
+function tickStep(step) {
+  if (tickBusy) return; tickBusy = true;
+  const n = T('tick').length, box = $('#tick-item'), dir = step > 0 ? 1 : -1;
+  const ease = 'cubic-bezier(.16,1,.3,1)';
+  if (reduced || !box.animate) { ti = (ti + step + n) % n; tickRender(); tickBusy = false; return; }
+  box.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateY(${-dir * 14}px)` }], { duration: 180, easing: ease, fill: 'forwards' }).finished.then(() => {
+    ti = (ti + step + n) % n; tickRender();
+    return box.animate([{ opacity: 0, transform: `translateY(${dir * 14}px)` }, { opacity: 1, transform: 'none' }], { duration: 300, easing: ease, fill: 'forwards' }).finished;
+  }).finally(() => { box.getAnimations().forEach(a => a.cancel()); tickBusy = false; });
+}
+$('#tick-row').addEventListener('click', () => tickStep(1));
+$('#tick-next').addEventListener('click', e => { e.stopPropagation(); tickStep(1); });
+$('#tick-prev').addEventListener('click', e => { e.stopPropagation(); tickStep(-1); });
+setInterval(() => { if (root.classList.contains('ready') && !document.hidden) tickStep(1); }, 5000);
+
+/* ---------- reveals ---------- */
+let ready = false;
+const gated = new Set();
+const io = new IntersectionObserver(entries => entries.forEach(e => {
+  if (!e.isIntersecting) return;
+  io.unobserve(e.target);
+  if (ready) e.target.classList.add('in'); else gated.add(e.target);
+}), { threshold: .15, rootMargin: '0px 0px -4% 0px' });
+function observeAll() {
+  $$('.rv:not([data-gate]), [data-lines]:not([data-gate]), [data-words]').forEach(el => io.observe(el));
+}
+function playReady() {
+  ready = true; root.classList.add('ready');
+  $$('[data-gate]').forEach(el => el.classList.add('in'));
+  gated.forEach(el => el.classList.add('in')); gated.clear();
+}
+
+/* ---------- liquid reveal (hero) ---------- */
+function liquid() {
+  const hero = $('#home'), canvas = $('#liquid'), ctx = canvas.getContext('2d');
+  const brushRadius = 143, decay = 0.016;
+  let dpr = 1, W = 0, H = 0, radius = 0, cover, brush, bctx, last = null, points = [], idle = 121, raf = 0;
+  function layout() {
+    const r = hero.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2);
+    W = Math.round(r.width * dpr); H = Math.round(r.height * dpr);
+    canvas.width = W; canvas.height = H; radius = brushRadius * dpr;
+    cover = document.createElement('canvas'); cover.width = W; cover.height = H;
+    const c = cover.getContext('2d');
+    const g = c.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#ff6a72'); g.addColorStop(.5, '#f0303f'); g.addColorStop(1, '#c4121f');
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+    const step = 4 * 16 * dpr; c.strokeStyle = 'rgba(255,255,255,.28)'; c.lineWidth = dpr; c.beginPath();
+    for (let x = 0; x < W; x += step) { c.moveTo(x, 0); c.lineTo(x, H); }
+    for (let y = 0; y < H; y += step) { c.moveTo(0, y); c.lineTo(W, y); }
+    c.stroke();
+    brush = document.createElement('canvas'); brush.width = brush.height = Math.ceil(radius * 2); bctx = brush.getContext('2d');
+  }
+  function stamp(x, y) {
+    const d = brush.width, c = d / 2;
+    bctx.globalCompositeOperation = 'source-over'; bctx.clearRect(0, 0, d, d);
+    const g = bctx.createRadialGradient(c, c, 0, c, c, c);
+    g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.55, 'rgba(255,255,255,.82)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    bctx.fillStyle = g; bctx.fillRect(0, 0, d, d);
+    bctx.globalCompositeOperation = 'source-in'; bctx.drawImage(cover, x - c, y - c, d, d, 0, 0, d, d);
+    ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(brush, x - c, y - c);
+  }
+  function tick() {
+    const drawing = points.length > 0;
+    if (drawing) idle = 0; else { idle++; if (idle > 120) { raf = 0; return; } }
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = `rgba(0,0,0,${drawing ? decay : Math.min(decay + idle * 0.004, 0.5)})`; ctx.fillRect(0, 0, W, H);
+    if (drawing) { points.forEach(p => stamp(p.x, p.y)); points = []; }
+    if (idle === 120) ctx.clearRect(0, 0, W, H);
+    raf = requestAnimationFrame(tick);
+  }
+  addEventListener('pointermove', e => {
+    const r = canvas.getBoundingClientRect(); if (!r.width) return;
+    const x = (e.clientX - r.left) * dpr, y = (e.clientY - r.top) * dpr;
+    if (x < -radius || y < -radius || x > W + radius || y > H + radius) { last = null; return; }
+    if (last) {
+      const dx = x - last.x, dy = y - last.y, dist = Math.hypot(dx, dy), step = Math.max(radius * .3, 1), n = Math.min(Math.ceil(dist / step), 60);
+      for (let i = 1; i <= n; i++) points.push({ x: last.x + dx * i / n, y: last.y + dy * i / n });
+    } else points.push({ x, y });
+    last = { x, y };
+    if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: true });
+  layout(); new ResizeObserver(() => { layout(); }).observe(hero);
+}
+if (!reduced && canHover) liquid();
+
+/* ---------- phones pointer parallax ---------- */
+if (!reduced && canHover) {
+  const ph = $('#phones'); let tx = 0, ty = 0, cx = 0, cy = 0, raf2 = 0;
+  addEventListener('pointermove', e => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; if (!raf2) raf2 = requestAnimationFrame(run); }, { passive: true });
+  const run = () => {
+    cx += (tx - cx) * .08; cy += (ty - cy) * .08;
+    $$('.phone-wrap', ph).forEach(p => { const d = +p.dataset.depth; p.style.translate = `${cx * d}px ${cy * d}px`; });
+    raf2 = (Math.abs(tx - cx) + Math.abs(ty - cy) > .001) ? requestAnimationFrame(run) : 0;
+  };
+}
+
+/* ---------- facts count-up (scroll progress) ---------- */
+const counters = $$('[data-count]').map(el => ({ el, target: +el.dataset.count, host: el.closest('li') }));
+let cuTick = 0;
+function updateCounters() {
+  cuTick = 0; const vh = innerHeight;
+  counters.forEach(c => {
+    const r = c.host.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, (vh - r.top) / (vh / 2 + r.height / 2)));
+    c.el.textContent = Math.round(p * c.target);
+  });
+}
+const queueCounters = () => { if (!cuTick) cuTick = setTimeout(updateCounters, 30); };
+addEventListener('scroll', queueCounters, { passive: true }); addEventListener('resize', queueCounters);
+
+/* ---------- menu ---------- */
+const menu = $('#menu');
+function openMenu() { menu.classList.add('open'); stopScroll(); addEventListener('keydown', onKey); $('#menu-close').focus(); }
+function closeMenu() { menu.classList.remove('open'); startScroll(); removeEventListener('keydown', onKey); }
+const onKey = e => { if (e.key === 'Escape') closeMenu(); };
+$('#menu-open').addEventListener('click', openMenu);
+$('#menu-close').addEventListener('click', closeMenu);
+
+/* ---------- navigation + language wiring ---------- */
+document.addEventListener('click', e => {
+  const go = e.target.closest('[data-go]');
+  if (go) { const inMenu = menu.classList.contains('open'); if (inMenu) closeMenu(); setTimeout(() => goTo(go.dataset.go), inMenu ? 60 : 0); }
+  const lb = e.target.closest('[data-lang]'); if (lb) applyLang(lb.dataset.lang);
+});
+
+/* ---------- boot ---------- */
+let initial = 'en';
+try { initial = localStorage.getItem('sp-lang') || (/^pl/i.test(navigator.language) ? 'pl' : 'en'); } catch (e) { initial = /^pl/i.test(navigator.language) ? 'pl' : 'en'; }
+applyLang(initial === 'pl' ? 'pl' : 'en');
+observeAll();
+updateCounters();
+
+/* ---------- loader ---------- */
+(function loader() {
+  stopScroll();
+  const el = $('#loader'), fill = $('#lfill'), num = $('#lnum');
+  const FILL_MS = reduced ? 250 : 1300, ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const t0 = performance.now();
+  (function frame(now) {
+    const t = Math.min((now - t0) / FILL_MS, 1), p = Math.round(ease(t) * 100);
+    fill.style.width = p + '%'; num.textContent = String(p).padStart(3, '0');
+    if (t < 1) return requestAnimationFrame(frame);
+    setTimeout(() => {
+      el.classList.add('out');
+      setTimeout(() => { el.remove(); startScroll(); window.scrollTo(0, 0); playReady(); }, reduced ? 0 : 700);
+    }, 120);
+  })(t0);
+})();
+</script>
+</body>
+</html>
