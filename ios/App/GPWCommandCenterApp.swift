@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct GPWCommandCenterApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
     let modelContainer: ModelContainer
 
     init() {
@@ -20,5 +21,10 @@ struct GPWCommandCenterApp: App {
             RootTabView()
         }
         .modelContainer(modelContainer)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background {
+                BackgroundRefreshManager.shared.scheduleNext()
+            }
+        }
     }
 }
