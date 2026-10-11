@@ -15,10 +15,16 @@ enum SyncService {
         return formatter
     }()
 
+    /// Local-notification stand-in: until remote push works (needs a paid
+    /// Apple Developer account, see Faza 3 w planie), a manual/background
+    /// refresh that finds new announcements fires a notification itself.
+    private static let maxIndividualNotifications = 3
+
     static func syncAnnouncements(context: ModelContext, watchedTickers: [String]) async throws {
         let items = try await BackendAPI.fetchAnnouncements(tickers: watchedTickers)
         let existingIDs = Set(try context.fetch(FetchDescriptor<Announcement>()).map(\.externalID))
 
+        var newlyInserted: [Announcement] = []
         for item in items where !existingIDs.contains(item.external_id) {
             let publishedAt = isoFormatter.date(from: item.published_at) ?? .now
             let announcement = Announcement(
@@ -29,8 +35,26 @@ enum SyncService {
                 publishedAt: publishedAt
             )
             context.insert(announcement)
+            newlyInserted.append(announcement)
         }
         try context.save()
+
+        guard !newlyInserted.isEmpty else { return }
+        if newlyInserted.count <= maxIndividualNotifications {
+            for announcement in newlyInserted {
+                await PushNotificationManager.shared.scheduleLocalNotification(
+                    title: announcement.companyTicker ?? "Komunikat",
+                    body: announcement.title,
+                    identifier: announcement.externalID
+                )
+            }
+        } else {
+            await PushNotificationManager.shared.scheduleLocalNotification(
+                title: "Nowe komunikaty",
+                body: "\(newlyInserted.count) nowych komunikatów od obserwowanych spółek",
+                identifier: "summary-\(UUID().uuidString)"
+            )
+        }
     }
 
     static func syncCalendarEvents(context: ModelContext, watchedTickers: [String]) async throws {

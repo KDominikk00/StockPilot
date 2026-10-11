@@ -29,6 +29,11 @@ private struct CalendarResponse: Decodable {
     let items: [CalendarEventDTO]
 }
 
+private struct SubscriptionRequestBody: Encodable {
+    let deviceToken: String
+    let tickers: [String]
+}
+
 enum BackendAPI {
     private static let decoder = JSONDecoder()
 
@@ -46,5 +51,13 @@ enum BackendAPI {
         url = url.appending(queryItems: [URLQueryItem(name: "tickers", value: tickers.joined(separator: ","))])
         let (data, _) = try await URLSession.shared.data(from: url)
         return try decoder.decode(CalendarResponse.self, from: data).items
+    }
+
+    static func postSubscription(deviceToken: String, tickers: [String]) async throws {
+        var request = URLRequest(url: BackendConfig.baseURL.appendingPathComponent("v1/subscriptions"))
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONEncoder().encode(SubscriptionRequestBody(deviceToken: deviceToken, tickers: tickers))
+        _ = try await URLSession.shared.data(for: request)
     }
 }

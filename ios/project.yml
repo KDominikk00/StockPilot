@@ -14,6 +14,7 @@ targets:
       - path: App
       - path: Models
       - path: Networking
+      - path: Notifications
       - path: Features
       - path: Resources
         buildPhase: resources
