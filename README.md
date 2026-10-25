@@ -109,6 +109,12 @@ Filing titles start with the company name, so mapping to a ticker is a normalise
 | `POST` | `/v1/subscriptions` | Upsert `{ deviceToken, tickers }` |
 | `DELETE` | `/v1/subscriptions/:deviceToken` | Remove a subscription |
 
+## Install on a device
+
+Grab the latest `.ipa` from [Releases](https://github.com/KDominikk00/StockPilot/releases). It is unsigned, so sideload it with [Sideloadly](https://sideloadly.io) or AltStore, which re-sign it with your Apple ID (free accounts need a re-sign every 7 days). Requires iOS 17+.
+
+The app uses the backend hosted on Render's free tier. After a quiet period the service sleeps, so the first refresh can take up to a minute.
+
 ## Getting started
 
 Requirements: macOS with Xcode 16+, Node.js 25+, [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
@@ -133,7 +139,7 @@ xcodegen generate
 open StockPilot.xcodeproj
 ```
 
-Run the `StockPilot` scheme on an iPhone simulator. The app talks to `http://localhost:3000` by default (see `ios/Networking/Endpoints.swift`), so start the backend first.
+Run the `StockPilot` scheme on an iPhone simulator. The app talks to the hosted backend by default. To use a local one, set `BackendConfig.baseURL` in `ios/Networking/Endpoints.swift` to `http://localhost:3000`.
 
 ## Project structure
 
@@ -163,4 +169,4 @@ docs/screenshots/
 - **Push needs a paid Apple Developer account.** The backend side (subscriptions, targeting, APNs client) is done and stays disabled until the `APNS_*` variables are set. Until then, new filings are surfaced through local notifications on refresh.
 - **Scraping is fragile.** Filing history and report dates come from HTML pages with no API, so a site redesign will break them. Selectors live in one file per source.
 - **Third-party data.** bankier.pl and Yahoo Finance are not official APIs. Check their terms before distributing the app widely. Data is informational and not investment advice.
-- **Backend is local.** There is no deployment config yet; running it as a service needs a host with a persistent disk for SQLite.
+- **Free-tier hosting.** The backend runs on Render's free plan: it sleeps when idle and its SQLite file lives in `/tmp`, so it is wiped on every restart. History refills per ticker on demand, but filings published while it was asleep can be missed. A plan with a persistent disk fixes both.
