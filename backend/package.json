@@ -5,8 +5,8 @@
   "type": "commonjs",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p .",
-    "start": "node dist/index.js",
+    "build": "tsc -p . && cp src/db/schema.sql dist/db/schema.sql",
+    "start": "node dist/scripts/seedCompanies.js && node dist/index.js",
     "seed": "tsx src/scripts/seedCompanies.ts",
     "poll:espi": "tsx src/scripts/pollEspiOnce.ts"
   },
