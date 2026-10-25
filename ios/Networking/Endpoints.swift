@@ -1,7 +1,7 @@
 import Foundation
 
 enum BackendConfig {
-    static let baseURL = URL(string: "http://localhost:3000")!
+    static let baseURL = URL(string: "https://stockpilot-backend-6fq9.onrender.com")!
 }
 
 struct AnnouncementDTO: Decodable {
