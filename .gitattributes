@@ -1,0 +1,2 @@
+# The landing page is not part of the app; keep it out of GitHub's language statistics.
+website/** linguist-documentation
