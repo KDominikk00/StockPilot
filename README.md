@@ -28,7 +28,7 @@
 ## Features
 
 - **Watchlist ("Obserwowane").** Pick companies from the full GPW main market (~400 tickers, bundled as a seed) and see live prices and daily change.
-- **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge. Each filing carries category tags (Wyniki, Dywidenda, WZA, Transakcje) derived from its title.
+- **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge. Each filing carries category tags (Wyniki, Dywidenda, WZA, Transakcje) derived from its title. Results and dividend filings from the last week also show how the price moved afterwards (e.g. "+3,2% w 1 h", or "kolejna sesja +2,5%" for after-hours filings), and filings open in an in-app reader instead of leaving the app.
 - **Earnings calendar.** Month view with today highlighted and a list of the selected month's report dates, filled in automatically.
 - **Company detail.** Quote, filings and report dates for a single company. Long lists are collapsed to three items with a "Pokaż więcej" toggle.
 - **Per-company notifications.** The bell on a company screen turns its notifications on (filled) or off (crossed out) without removing it from the watchlist.
@@ -92,6 +92,7 @@ The backend exists because push notifications need a process that watches the so
 | Filing history | `bankier.pl/gielda/notowania/akcje/{TICKER}/komunikaty` | Scraped lazily the first time a ticker is requested. |
 | Report dates | `bankier.pl/gielda/notowania/akcje/{TICKER}/kalendarium` | Scraped lazily; only entries tagged "Wyniki spółek" are kept. Dates come from `data-timestamp`. |
 | Quotes | Yahoo Finance chart API, `{TICKER}.WA` | Called from the app, 60 s in-memory cache, degrades quietly when unavailable. |
+| Price reaction | Same API, 5-minute bars for the last month | One request per ticker, cached 5 min. Only fetched for recent results/dividend filings. |
 | Company list | Bundled `companies_seed.json` | 402 companies: ticker, ISIN, full name. |
 
 Filing titles start with the company name, so mapping to a ticker is a normalised exact match with a fuzzy fallback. Entries that do not match are stored with no company instead of being dropped.

@@ -5,7 +5,7 @@ struct CompanyDetailView: View {
     @Bindable var company: Company
 
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.openURL) private var openURL
+    @State private var reader: ReaderLink?
     @State private var announcements: [Announcement] = []
     @State private var events: [CalendarEvent] = []
     @State private var showAllAnnouncements = false
@@ -68,9 +68,7 @@ struct CompanyDetailView: View {
                     ForEach(visibleAnnouncements) { item in
                         Button {
                             item.isRead = true
-                            if let url = URL(string: item.url) {
-                                openURL(url)
-                            }
+                            reader = ReaderLink(string: item.url)
                         } label: {
                             HStack(alignment: .top, spacing: 8) {
                                 if !item.isRead {
@@ -86,7 +84,7 @@ struct CompanyDetailView: View {
                                     Text(item.publishedAt.polishDateTime)
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
-                                    AnnouncementTagRow(tags: item.tags)
+                                    AnnouncementTagRow(announcement: item)
                                 }
                             }
                         }
@@ -122,6 +120,7 @@ struct CompanyDetailView: View {
             }
         }
         .navigationTitle(company.ticker)
+        .readerSheet(item: $reader)
         .task {
             let ticker = company.ticker
             let announcementDescriptor = FetchDescriptor<Announcement>(

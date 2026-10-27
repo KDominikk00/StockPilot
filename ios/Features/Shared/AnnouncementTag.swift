@@ -53,9 +53,10 @@ extension Announcement {
 }
 
 struct AnnouncementTagRow: View {
-    let tags: [AnnouncementTag]
+    let announcement: Announcement
 
     var body: some View {
+        let tags = announcement.tags
         if !tags.isEmpty {
             HStack(spacing: 6) {
                 ForEach(tags, id: \.self) { tag in
@@ -66,6 +67,7 @@ struct AnnouncementTagRow: View {
                         .padding(.vertical, 3)
                         .background(tag.color.opacity(0.15), in: Capsule())
                 }
+                ReactionChip(announcement: announcement)
             }
             .padding(.top, 2)
         }

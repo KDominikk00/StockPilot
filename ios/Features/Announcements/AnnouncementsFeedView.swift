@@ -5,7 +5,7 @@ struct AnnouncementsFeedView: View {
     let watchedCompanies: [Company]
 
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.openURL) private var openURL
+    @State private var reader: ReaderLink?
 
     @Query(sort: \Announcement.publishedAt, order: .reverse)
     private var allAnnouncements: [Announcement]
@@ -42,9 +42,7 @@ struct AnnouncementsFeedView: View {
                 ForEach(feed) { item in
                     Button {
                         item.isRead = true
-                        if let url = URL(string: item.url) {
-                            openURL(url)
-                        }
+                        reader = ReaderLink(string: item.url)
                     } label: {
                         HStack(alignment: .top, spacing: 8) {
                             if !item.isRead {
@@ -63,7 +61,7 @@ struct AnnouncementsFeedView: View {
                                 Text(item.publishedAt.polishDateTime)
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
-                                AnnouncementTagRow(tags: item.tags)
+                                AnnouncementTagRow(announcement: item)
                             }
                         }
                     }
@@ -72,6 +70,7 @@ struct AnnouncementsFeedView: View {
             }
         }
         .navigationTitle("Komunikaty")
+        .readerSheet(item: $reader)
         .refreshable {
             do {
                 try await SyncService.syncAnnouncements(
