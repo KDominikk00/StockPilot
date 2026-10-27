@@ -63,6 +63,7 @@ struct AnnouncementsFeedView: View {
                                 Text(item.publishedAt.polishDateTime)
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
+                                AnnouncementTagRow(tags: item.tags)
                             }
                         }
                     }

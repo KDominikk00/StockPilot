@@ -86,6 +86,7 @@ struct CompanyDetailView: View {
                                     Text(item.publishedAt.polishDateTime)
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
+                                    AnnouncementTagRow(tags: item.tags)
                                 }
                             }
                         }

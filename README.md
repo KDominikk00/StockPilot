@@ -28,7 +28,7 @@
 ## Features
 
 - **Watchlist ("Obserwowane").** Pick companies from the full GPW main market (~400 tickers, bundled as a seed) and see live prices and daily change.
-- **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge.
+- **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge. Each filing carries category tags (Wyniki, Dywidenda, WZA, Transakcje) derived from its title.
 - **Earnings calendar.** Month view with today highlighted and a list of the selected month's report dates, filled in automatically.
 - **Company detail.** Quote, filings and report dates for a single company. Long lists are collapsed to three items with a "Pokaż więcej" toggle.
 - **Per-company notifications.** The bell on a company screen turns its notifications on (filled) or off (crossed out) without removing it from the watchlist.
