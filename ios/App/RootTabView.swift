@@ -8,12 +8,13 @@ struct RootTabView: View {
     @Query(filter: #Predicate<Company> { $0.isWatched }, sort: \Company.nameFull)
     private var watchedCompanies: [Company]
 
-    @Query(filter: #Predicate<Announcement> { $0.isRead == false })
-    private var unreadAnnouncements: [Announcement]
+    // Filtering isRead in memory (not in the predicate) so the badge updates as soon as an
+    // item is marked read; a predicate-based query doesn't refresh on in-place property changes.
+    @Query private var allAnnouncements: [Announcement]
 
     private var unreadCount: Int {
         let watchedTickers = Set(watchedCompanies.filter { !$0.isMuted }.map(\.ticker))
-        return unreadAnnouncements.filter { ($0.companyTicker).map(watchedTickers.contains) ?? false }.count
+        return allAnnouncements.filter { !$0.isRead && (($0.companyTicker).map(watchedTickers.contains) ?? false) }.count
     }
 
     var body: some View {
