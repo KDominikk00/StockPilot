@@ -5,6 +5,7 @@ struct CompanyDetailView: View {
     @Bindable var company: Company
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
     @State private var announcements: [Announcement] = []
     @State private var events: [CalendarEvent] = []
     @State private var showAllAnnouncements = false
@@ -48,8 +49,8 @@ struct CompanyDetailView: View {
                             company.isMuted.toggle()
                         } label: {
                             Label(
-                                company.isMuted ? "Wyciszone" : "Wycisz powiadomienia",
-                                systemImage: company.isMuted ? "bell.slash.fill" : "bell"
+                                company.isMuted ? "Powiadomienia wyłączone" : "Powiadomienia włączone",
+                                systemImage: company.isMuted ? "bell.slash" : "bell.fill"
                             )
                         }
                         .labelStyle(.iconOnly)
@@ -65,12 +66,30 @@ struct CompanyDetailView: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(visibleAnnouncements) { item in
-                        VStack(alignment: .leading) {
-                            Text(item.title)
-                            Text(item.publishedAt.formatted(date: .abbreviated, time: .shortened))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        Button {
+                            item.isRead = true
+                            if let url = URL(string: item.url) {
+                                openURL(url)
+                            }
+                        } label: {
+                            HStack(alignment: .top, spacing: 8) {
+                                if !item.isRead {
+                                    Circle()
+                                        .fill(.tint)
+                                        .frame(width: 8, height: 8)
+                                        .padding(.top, 6)
+                                }
+                                VStack(alignment: .leading) {
+                                    Text(item.title)
+                                        .font(item.isRead ? .body : .body.bold())
+                                        .foregroundStyle(.primary)
+                                    Text(item.publishedAt.polishDateTime)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
                     if announcements.count > Self.collapsedCount {
                         Button(showAllAnnouncements ? "Pokaż mniej" : "Pokaż więcej") {
@@ -88,7 +107,7 @@ struct CompanyDetailView: View {
                     ForEach(visibleEvents) { event in
                         VStack(alignment: .leading) {
                             Text(event.reportType)
-                            Text(event.eventDate.formatted(date: .abbreviated, time: .omitted))
+                            Text(event.eventDate.polishDate)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

@@ -28,22 +28,24 @@ struct EarningsCalendarView: View {
             MonthGrid(visibleMonth: visibleMonth, eventsByDay: eventsByDay)
 
             List {
-                let upcoming = eventsByDay.keys.sorted().filter { $0 >= Calendar.current.startOfDay(for: .now) }
+                let daysInMonth = eventsByDay.keys.sorted().filter {
+                    Calendar.current.isDate($0, equalTo: visibleMonth, toGranularity: .month)
+                }
                 if watchedCompanies.isEmpty {
                     ContentUnavailableView(
                         "Brak obserwowanych spółek",
                         systemImage: "calendar",
                         description: Text("Dodaj spółki do watchlisty, aby zobaczyć terminy ich raportów.")
                     )
-                } else if upcoming.isEmpty {
+                } else if daysInMonth.isEmpty {
                     ContentUnavailableView(
-                        "Brak zaplanowanych publikacji",
+                        "Brak terminów",
                         systemImage: "calendar.badge.clock",
-                        description: Text("Przeciągnij listę w dół, aby sprawdzić najnowsze terminy.")
+                        description: Text("W tym miesiącu nie ma zaplanowanych publikacji. Zmień miesiąc strzałkami lub przeciągnij listę w dół.")
                     )
                 } else {
-                    ForEach(upcoming, id: \.self) { day in
-                        Section(day.formatted(date: .abbreviated, time: .omitted)) {
+                    ForEach(daysInMonth, id: \.self) { day in
+                        Section(day.polishDate) {
                             ForEach(eventsByDay[day] ?? []) { event in
                                 VStack(alignment: .leading) {
                                     Text(event.companyTicker ?? "")
@@ -82,7 +84,7 @@ private struct MonthHeader: View {
         HStack {
             Button { shift(by: -1) } label: { Image(systemName: "chevron.left") }
             Spacer()
-            Text(visibleMonth.formatted(.dateTime.month(.wide).year()))
+            Text(visibleMonth.polishMonthYear)
                 .font(.headline)
             Spacer()
             Button { shift(by: 1) } label: { Image(systemName: "chevron.right") }
@@ -126,9 +128,13 @@ private struct MonthGrid: View {
             ForEach(Array(days.enumerated()), id: \.offset) { _, day in
                 if let day {
                     let hasEvents = !(eventsByDay[calendar.startOfDay(for: day)]?.isEmpty ?? true)
+                    let isToday = calendar.isDateInToday(day)
                     VStack(spacing: 2) {
                         Text("\(calendar.component(.day, from: day))")
-                            .font(.caption)
+                            .font(.caption.weight(isToday ? .bold : .regular))
+                            .foregroundStyle(isToday ? Color.white : Color.primary)
+                            .frame(width: 24, height: 24)
+                            .background(Circle().fill(isToday ? Color.accentColor : .clear))
                         Circle()
                             .fill(hasEvents ? Color.accentColor : .clear)
                             .frame(width: 5, height: 5)

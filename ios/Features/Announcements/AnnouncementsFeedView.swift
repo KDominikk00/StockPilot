@@ -60,7 +60,7 @@ struct AnnouncementsFeedView: View {
                                 Text(item.title)
                                     .font(item.isRead ? .body : .body.bold())
                                     .foregroundStyle(.primary)
-                                Text(item.publishedAt.formatted(date: .abbreviated, time: .shortened))
+                                Text(item.publishedAt.polishDateTime)
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                             }

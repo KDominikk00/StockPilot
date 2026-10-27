@@ -16,7 +16,7 @@ struct WatchlistView: View {
                     description: Text("Dodaj spółki z GPW, które chcesz śledzić.")
                 )
             } else {
-                Section("Obserwowane") {
+                Section("Spółki") {
                     ForEach(watchedCompanies) { company in
                         NavigationLink(value: company) {
                             CompanyRow(company: company)
@@ -25,7 +25,7 @@ struct WatchlistView: View {
                 }
             }
         }
-        .navigationTitle("Watchlist")
+        .navigationTitle("Obserwowane")
         .navigationDestination(for: Company.self) { company in
             CompanyDetailView(company: company)
         }

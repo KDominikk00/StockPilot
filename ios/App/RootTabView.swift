@@ -21,7 +21,7 @@ struct RootTabView: View {
             NavigationStack {
                 WatchlistView(watchedCompanies: watchedCompanies)
             }
-            .tabItem { Label("Watchlist", systemImage: "star.fill") }
+            .tabItem { Label("Obserwowane", systemImage: "star.fill") }
 
             NavigationStack {
                 AnnouncementsFeedView(watchedCompanies: watchedCompanies)

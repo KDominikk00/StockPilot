@@ -27,11 +27,11 @@
 
 ## Features
 
-- **Watchlist.** Pick companies from the full GPW main market (~400 tickers, bundled as a seed) and see live prices and daily change.
+- **Watchlist ("Obserwowane").** Pick companies from the full GPW main market (~400 tickers, bundled as a seed) and see live prices and daily change.
 - **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge.
 - **Earnings calendar.** Month view plus an upcoming list, filled in automatically with report publication dates.
 - **Company detail.** Quote, filings and report dates for a single company. Long lists are collapsed to three items with a "Pokaż więcej" toggle.
-- **Per-company mute.** Silence a company without removing it from the watchlist.
+- **Per-company notifications.** The bell on a company screen turns its notifications on (filled) or off (crossed out) without removing it from the watchlist.
 - **Local notifications.** A banner is posted when a refresh finds new filings.
 - **Push (backend ready).** Subscription upload and APNs delivery are implemented and gated on credentials, see [Limitations](#limitations).
 - **No accounts.** Everything the user picks lives on the device.
