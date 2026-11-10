@@ -215,7 +215,7 @@ struct TodayView: View {
     }
 
     private var companiesSection: some View {
-        Section("Obserwowane (\(watchedCompanies.count))") {
+        Section {
             ForEach(watchedCompanies) { company in
                 NavigationLink(value: company) {
                     CompanyRow(
@@ -225,6 +225,14 @@ struct TodayView: View {
                     )
                 }
             }
+        } header: {
+            Text("Obserwowane (\(watchedCompanies.count))")
+        } footer: {
+            Text("Dane mają charakter informacyjny i nie stanowią rekomendacji inwestycyjnej.")
+                .font(.caption2)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
+                .padding(.top, 8)
         }
     }
 }
