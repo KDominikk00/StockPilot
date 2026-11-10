@@ -4,11 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>StockPilot — Your command center for the Warsaw Stock Exchange</title>
-<meta name="description" content="StockPilot is a native iOS app for Warsaw Stock Exchange investors: a watchlist, every ESPI/EBI filing and an earnings calendar in one place. Coming soon to the App Store." />
+<meta name="description" content="StockPilot is a native iOS app for Warsaw Stock Exchange investors: a daily briefing, every ESPI/EBI filing and an earnings calendar in one place. Coming soon to the App Store." />
 <meta name="theme-color" content="#0a0a0a" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="StockPilot — Coming soon to the App Store" />
-<meta property="og:description" content="Your command center for the Warsaw Stock Exchange: watchlist, ESPI/EBI filings and an earnings calendar, in one native iOS app." />
+<meta property="og:description" content="Your command center for the Warsaw Stock Exchange: a daily briefing, ESPI/EBI filings and an earnings calendar, in one native iOS app." />
 <meta property="og:image" content="https://stockpilot-website-six.vercel.app/assets/og.png" />
 <meta property="og:url" content="https://stockpilot-website-six.vercel.app/" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="preload" as="image" href="assets/watchlist.jpg" />
+<link rel="preload" as="image" href="assets/today.jpg" />
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <noscript><style>.rv,.line-inner,.word-in{opacity:1!important;transform:none!important}#loader{display:none!important}</style></noscript>
@@ -176,6 +176,7 @@ html.ready .header{opacity:1;transform:none}
 .phone.p1{left:0;top:2rem;z-index:2;transform:rotate(-4deg)}
 .phone.p2{right:0;top:0;width:14rem;z-index:1;transform:rotate(6deg);opacity:.95}
 .phone-wrap{transition:transform .25s ease-out}
+.phone.p2 img{-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 90%);mask-image:linear-gradient(to bottom,#000 72%,transparent 90%)}
 .tickcard{position:absolute;left:-3rem;bottom:-.75rem;z-index:5;width:21rem;max-width:92%;border-radius:1.5rem;background:rgba(255,255,255,.78);padding:.6rem;box-shadow:0 1rem 2.5rem -.5rem rgba(0,0,0,.4),0 0 0 1px rgba(230,229,226,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#111}
 @media (max-width:640px){.tickcard{left:0}}
 .tickcard .row{display:flex;gap:.5rem;cursor:pointer;border-radius:.875rem}
@@ -435,7 +436,7 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
     <div class="hero-r">
       <div class="phones rv" data-gate style="--y:24px;--d:350ms" id="phones">
         <div class="phone p2 phone-wrap" data-depth="-10"><img src="assets/announcements.jpg" alt="StockPilot announcements feed" width="380" height="826" loading="eager" /></div>
-        <div class="phone p1 phone-wrap" data-depth="12"><img src="assets/watchlist.jpg" alt="StockPilot watchlist" width="380" height="826" fetchpriority="high" /></div>
+        <div class="phone p1 phone-wrap" data-depth="12"><img src="assets/today.jpg" alt="StockPilot Today (Dziś) screen" width="380" height="826" fetchpriority="high" /></div>
         <div class="tickcard" id="tick">
           <div class="row" id="tick-row">
             <div class="tile"><img src="assets/icon-512.png" alt="" width="80" height="80" /></div>
@@ -500,15 +501,15 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
     </div>
     <ul class="cards">
       <li class="rv" style="--y:48px"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
-        <div class="card-meta"><span data-i18n="feat.1.cat">Watchlist</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">01</span></div>
-        <h3 data-i18n="feat.1.name">Watchlist</h3><p data-i18n="feat.1.desc"></p>
-        <div class="tags"><span class="chip" data-i18n="feat.1.t1">400+ tickers</span><span class="chip" data-i18n="feat.1.t2">Live quotes</span></div>
-        <div class="peek"><div class="phone"><img src="assets/watchlist.jpg" alt="Watchlist screen" width="380" height="826" loading="lazy" /></div></div>
+        <div class="card-meta"><span data-i18n="feat.1.cat">Today</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">01</span></div>
+        <h3 data-i18n="feat.1.name">Today</h3><p data-i18n="feat.1.desc"></p>
+        <div class="tags"><span class="chip" data-i18n="feat.1.t1">400+ tickers</span><span class="chip" data-i18n="feat.1.t2">Daily briefing</span></div>
+        <div class="peek"><div class="phone"><img src="assets/today.jpg" alt="Today (Dziś) screen" width="380" height="826" loading="lazy" /></div></div>
       </article></li>
       <li class="rv" style="--y:48px;--d:90ms"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
         <div class="card-meta"><span data-i18n="feat.2.cat">Announcements</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">02</span></div>
         <h3 data-i18n="feat.2.name">Announcements</h3><p data-i18n="feat.2.desc"></p>
-        <div class="tags"><span class="chip">ESPI</span><span class="chip">EBI</span><span class="chip" data-i18n="feat.2.t3">Unread markers</span></div>
+        <div class="tags"><span class="chip">ESPI</span><span class="chip">EBI</span><span class="chip" data-i18n="feat.2.t3">Category tags</span><span class="chip" data-i18n="feat.2.t4">Price reaction</span></div>
         <div class="peek"><div class="phone"><img src="assets/announcements.jpg" alt="Announcements screen" width="380" height="826" loading="lazy" /></div></div>
       </article></li>
       <li class="rv" style="--y:48px"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
@@ -520,7 +521,7 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
       <li class="rv" style="--y:48px;--d:90ms"><article class="card" data-sp="y:-8;s:1.012;t:260,22">
         <div class="card-meta"><span data-i18n="feat.4.cat">Company detail</span><span class="card-badge" data-sp="r:45;s:1.08;t:280,18" data-sp-trigger=".card">04</span></div>
         <h3 data-i18n="feat.4.name">Company detail</h3><p data-i18n="feat.4.desc"></p>
-        <div class="tags"><span class="chip" data-i18n="feat.4.t1">Per-company mute</span><span class="chip" data-i18n="feat.4.t2">Notifications</span></div>
+        <div class="tags"><span class="chip" data-i18n="feat.4.t1">Per-company alerts</span><span class="chip" data-i18n="feat.4.t2">Report dates</span></div>
         <div class="peek"><div class="phone"><img src="assets/company-detail.jpg" alt="Company detail screen" width="380" height="826" loading="lazy" /></div></div>
       </article></li>
     </ul>
@@ -602,7 +603,7 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
         <ul>
           <li class="txt">SwiftUI · SwiftData</li>
           <li class="txt" data-i18n="foot.d1">ESPI/EBI filings via bankier.pl</li>
-          <li class="txt" data-i18n="foot.d2">Quotes via Yahoo Finance</li>
+          <li class="txt" data-i18n="foot.d2">Price reactions via Yahoo Finance</li>
           <li><a class="flink" href="https://github.com/KDominikk00/StockPilot" target="_blank" rel="noopener"><span data-sp="x:4;o:.65-1;t:320,22" data-sp-trigger="a">GitHub ↗</span></a></li>
         </ul>
       </div>
@@ -719,28 +720,28 @@ const I18N = {
   en: {
     'skip': 'Skip to content',
     'meta.title': 'StockPilot — Your command center for the Warsaw Stock Exchange',
-    'meta.desc': 'StockPilot is a native iOS app for Warsaw Stock Exchange investors: a watchlist, every ESPI/EBI filing and an earnings calendar in one place. Coming soon to the App Store.',
+    'meta.desc': 'StockPilot is a native iOS app for Warsaw Stock Exchange investors: a daily briefing, every ESPI/EBI filing and an earnings calendar in one place. Coming soon to the App Store.',
     'loader.tag': 'Your command center for the stock market.', 'loader.loading': 'Loading',
     'nav.home': 'Home', 'nav.features': 'Features', 'nav.how': 'How it works', 'nav.facts': 'Facts', 'nav.menu': 'Menu', 'nav.close': 'Close',
     'clock.label': 'Warsaw time',
     'hero.eyebrow': 'Coming soon to the App Store',
     'hero.h1': ['Command center', 'for the Warsaw', 'Stock Exchange.'],
-    'hero.sub': 'A native iOS companion for investors in Warsaw Stock Exchange companies: your watchlist, every ESPI/EBI filing and the earnings calendar, in one place.',
+    'hero.sub': 'A native iOS companion for investors in Warsaw Stock Exchange companies: a daily briefing, every ESPI/EBI filing and the earnings calendar, in one place.',
     'hero.chip2': 'No accounts', 'hero.chip3': '400+ GPW companies', 'hero.cta2': 'See features',
     'store.small': 'Coming soon on the', 'store.aria': 'Coming soon on the App Store', 'store.menu': 'Coming soon on the App Store',
-    'tick': [['Watchlist', 'Track every ticker.'], ['Announcements', 'Filings as they land.'], ['Earnings calendar', 'Reports, on your calendar.']],
+    'tick': [['Today', 'Your daily briefing.'], ['Announcements', 'Filings, tagged by type.'], ['Earnings calendar', 'Reports, on your calendar.']],
     'status.l': 'Built for GPW investors', 'status.m': 'ESPI & EBI filings, polled every 3 minutes', 'status.r': 'Scroll to explore',
     'about.eyebrow': 'The app', 'about.cap': 'Native iOS, built with SwiftUI.',
     'about.statement': 'StockPilot follows the companies you care about on the GPW and <em>surfaces every ESPI/EBI filing and report date in one place, with no account and no noise.</em>',
     'about.foot': 'Launching on iPhone.',
     'band.1': 'Track', 'band.2': 'Read', 'band.3': 'Plan',
     'feat.eyebrow': 'Features', 'feat.h2': "What's inside",
-    'feat.1.cat': 'Watchlist', 'feat.1.name': 'Watchlist', 'feat.1.desc': 'Pick from the full GPW main market and see live prices and the daily change at a glance.', 'feat.1.t1': '400+ tickers', 'feat.1.t2': 'Live quotes',
-    'feat.2.cat': 'Announcements', 'feat.2.name': 'Announcements', 'feat.2.desc': 'Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge.', 'feat.2.t3': 'Unread markers',
-    'feat.3.cat': 'Earnings calendar', 'feat.3.name': 'Earnings calendar', 'feat.3.desc': 'A month view plus an upcoming list, filled in automatically with report publication dates.', 'feat.3.t1': 'Month view', 'feat.3.t2': 'Auto-filled',
-    'feat.4.cat': 'Company detail', 'feat.4.name': 'Company detail', 'feat.4.desc': 'Quote, filings and report dates for a single company, with a per-company mute for when you want quiet.', 'feat.4.t1': 'Per-company mute', 'feat.4.t2': 'Notifications',
+    'feat.1.cat': 'Today', 'feat.1.name': 'Today', 'feat.1.desc': 'A daily briefing: new filings, reports due this week, the most important recent announcements and the companies you follow.', 'feat.1.t1': '400+ tickers', 'feat.1.t2': 'Daily briefing',
+    'feat.2.cat': 'Announcements', 'feat.2.name': 'Announcements', 'feat.2.desc': 'Official ESPI/EBI filings for the companies you follow, newest first, with category tags, the price reaction on results and dividends, and an in-app reader.', 'feat.2.t3': 'Category tags', 'feat.2.t4': 'Price reaction',
+    'feat.3.cat': 'Earnings calendar', 'feat.3.name': 'Earnings calendar', 'feat.3.desc': 'A month view with today highlighted and a list of the month\'s report dates, filled in automatically.', 'feat.3.t1': 'Month view', 'feat.3.t2': 'Auto-filled',
+    'feat.4.cat': 'Company detail', 'feat.4.name': 'Company detail', 'feat.4.desc': 'Filings and report dates for a single company, with a per-company bell to turn its notifications on or off.', 'feat.4.t1': 'Per-company alerts', 'feat.4.t2': 'Report dates',
     'how.eyebrow': 'How it works', 'how.h2': 'Simple by design',
-    'how.1.t': 'Pick your companies', 'how.1.d': 'Search ~400 GPW tickers and add them to your watchlist.',
+    'how.1.t': 'Pick your companies', 'how.1.d': 'Search ~400 GPW tickers and follow the ones you care about.',
     'how.2.t': 'Filings as they land', 'how.2.d': 'A backend watches ESPI/EBI every 3 minutes, so your feed stays fresh.',
     'how.3.t': 'Never miss a report', 'how.3.d': 'Report publication dates land in your calendar automatically.',
     'how.4.t': 'Private by design', 'how.4.d': 'No accounts. What you follow stays on your device.',
@@ -750,37 +751,37 @@ const I18N = {
     'faq.1.q': 'When does it launch?', 'faq.1.a': "Soon, on the App Store for iPhone. There's no date yet, so check back here.",
     'faq.2.q': 'Is it free?', 'faq.2.a': "Pricing hasn't been announced yet.",
     'faq.3.q': 'Do I need an account?', 'faq.3.a': 'No. Everything you pick lives on your device.',
-    'faq.4.q': 'Where does the data come from?', 'faq.4.a': 'Filings and report dates come from bankier.pl, and quotes come from Yahoo Finance. Both are third-party sources.',
+    'faq.4.q': 'Where does the data come from?', 'faq.4.a': 'Filings and report dates come from bankier.pl, and price reactions come from Yahoo Finance. Both are third-party sources.',
     'faq.5.q': 'Is this investment advice?', 'faq.5.a': 'No. StockPilot is informational only and is not investment advice.',
     'foot.h2': ['Coming soon to', 'the App Store.'], 'foot.tag': 'Your command center for the Warsaw Stock Exchange.',
-    'foot.c1': 'Product', 'foot.c2': 'Under the hood', 'foot.d1': 'ESPI/EBI filings via bankier.pl', 'foot.d2': 'Quotes via Yahoo Finance',
+    'foot.c1': 'Product', 'foot.c2': 'Under the hood', 'foot.d1': 'ESPI/EBI filings via bankier.pl', 'foot.d2': 'Price reactions via Yahoo Finance',
     'foot.legal': '© 2026 StockPilot. Data is informational and not investment advice.', 'foot.apple': 'App Store is a service mark of Apple Inc.'
   },
   pl: {
     'skip': 'Przejdź do treści',
     'meta.title': 'StockPilot — Twoje centrum dowodzenia na giełdzie',
-    'meta.desc': 'StockPilot to natywna aplikacja na iOS dla inwestorów GPW: watchlista, wszystkie komunikaty ESPI/EBI i kalendarz wyników w jednym miejscu. Wkrótce w App Store.',
+    'meta.desc': 'StockPilot to natywna aplikacja na iOS dla inwestorów GPW: dzienny przegląd, wszystkie komunikaty ESPI/EBI i kalendarz wyników w jednym miejscu. Wkrótce w App Store.',
     'loader.tag': 'Twoje centrum dowodzenia na giełdzie.', 'loader.loading': 'Ładowanie',
     'nav.home': 'Start', 'nav.features': 'Funkcje', 'nav.how': 'Jak to działa', 'nav.facts': 'Fakty', 'nav.menu': 'Menu', 'nav.close': 'Zamknij',
     'clock.label': 'Czas w Warszawie',
     'hero.eyebrow': 'Wkrótce w App Store',
     'hero.h1': ['Twoje centrum', 'dowodzenia', 'na giełdzie.'],
-    'hero.sub': 'Natywna aplikacja na iOS dla inwestorów spółek z GPW: watchlista, wszystkie komunikaty ESPI/EBI i kalendarz wyników w jednym miejscu.',
+    'hero.sub': 'Natywna aplikacja na iOS dla inwestorów spółek z GPW: dzienny przegląd, wszystkie komunikaty ESPI/EBI i kalendarz wyników w jednym miejscu.',
     'hero.chip2': 'Bez konta', 'hero.chip3': '400+ spółek GPW', 'hero.cta2': 'Zobacz funkcje',
     'store.small': 'Wkrótce w', 'store.aria': 'Wkrótce w App Store', 'store.menu': 'Wkrótce w App Store',
-    'tick': [['Watchlista', 'Śledź każdą spółkę.'], ['Komunikaty', 'Na bieżąco, od razu.'], ['Kalendarz wyników', 'Raporty w kalendarzu.']],
+    'tick': [['Dziś', 'Twój codzienny przegląd.'], ['Komunikaty', 'Oznaczone według typu.'], ['Kalendarz wyników', 'Raporty w kalendarzu.']],
     'status.l': 'Dla inwestorów GPW', 'status.m': 'Komunikaty ESPI i EBI co 3 minuty', 'status.r': 'Przewiń',
     'about.eyebrow': 'Aplikacja', 'about.cap': 'Natywnie na iOS, zbudowane w SwiftUI.',
     'about.statement': 'StockPilot śledzi spółki z GPW, które Cię interesują, i <em>zbiera w jednym miejscu każdy komunikat ESPI/EBI oraz termin publikacji wyników, bez konta i bez szumu.</em>',
     'about.foot': 'Premiera na iPhone.',
     'band.1': 'Śledź', 'band.2': 'Czytaj', 'band.3': 'Planuj',
     'feat.eyebrow': 'Funkcje', 'feat.h2': 'Co w środku',
-    'feat.1.cat': 'Watchlista', 'feat.1.name': 'Watchlista', 'feat.1.desc': 'Wybierz spółki z całego rynku głównego GPW i zobacz bieżące kursy oraz dzienną zmianę.', 'feat.1.t1': '400+ spółek', 'feat.1.t2': 'Notowania',
-    'feat.2.cat': 'Komunikaty', 'feat.2.name': 'Komunikaty', 'feat.2.desc': 'Oficjalne komunikaty ESPI/EBI spółek, które obserwujesz, od najnowszych, ze znacznikami nieprzeczytanych i plakietką na zakładce.', 'feat.2.t3': 'Nieprzeczytane',
-    'feat.3.cat': 'Kalendarz wyników', 'feat.3.name': 'Kalendarz wyników', 'feat.3.desc': 'Widok miesiąca i lista nadchodzących wydarzeń, automatycznie uzupełniane datami publikacji raportów.', 'feat.3.t1': 'Widok miesiąca', 'feat.3.t2': 'Automatycznie',
-    'feat.4.cat': 'Szczegóły spółki', 'feat.4.name': 'Szczegóły spółki', 'feat.4.desc': 'Kurs, komunikaty i terminy raportów jednej spółki, z wyciszaniem pojedynczych spółek, gdy chcesz spokoju.', 'feat.4.t1': 'Wyciszanie spółek', 'feat.4.t2': 'Powiadomienia',
+    'feat.1.cat': 'Dziś', 'feat.1.name': 'Dziś', 'feat.1.desc': 'Dzienny przegląd: nowe komunikaty, raporty w tym tygodniu, najważniejsze ostatnie ogłoszenia i spółki, które obserwujesz.', 'feat.1.t1': '400+ spółek', 'feat.1.t2': 'Dzienny przegląd',
+    'feat.2.cat': 'Komunikaty', 'feat.2.name': 'Komunikaty', 'feat.2.desc': 'Oficjalne komunikaty ESPI/EBI spółek, które obserwujesz, od najnowszych, z tagami kategorii, reakcją kursu na wyniki i dywidendy oraz czytnikiem w aplikacji.', 'feat.2.t3': 'Tagi kategorii', 'feat.2.t4': 'Reakcja kursu',
+    'feat.3.cat': 'Kalendarz wyników', 'feat.3.name': 'Kalendarz wyników', 'feat.3.desc': 'Widok miesiąca z wyróżnionym dniem dzisiejszym i lista terminów raportów z danego miesiąca, uzupełniana automatycznie.', 'feat.3.t1': 'Widok miesiąca', 'feat.3.t2': 'Automatycznie',
+    'feat.4.cat': 'Szczegóły spółki', 'feat.4.name': 'Szczegóły spółki', 'feat.4.desc': 'Komunikaty i terminy raportów jednej spółki, z dzwonkiem do włączania i wyłączania jej powiadomień.', 'feat.4.t1': 'Alerty per spółka', 'feat.4.t2': 'Terminy raportów',
     'how.eyebrow': 'Jak to działa', 'how.h2': 'Proste z założenia',
-    'how.1.t': 'Wybierz spółki', 'how.1.d': 'Wyszukaj ponad 400 spółek z GPW i dodaj je do watchlisty.',
+    'how.1.t': 'Wybierz spółki', 'how.1.d': 'Wyszukaj ponad 400 spółek z GPW i obserwuj te, na których Ci zależy.',
     'how.2.t': 'Komunikaty na bieżąco', 'how.2.d': 'Serwer sprawdza ESPI/EBI co 3 minuty, więc Twój feed jest zawsze aktualny.',
     'how.3.t': 'Żaden raport nie umknie', 'how.3.d': 'Terminy publikacji raportów trafiają do kalendarza automatycznie.',
     'how.4.t': 'Prywatne z założenia', 'how.4.d': 'Bez kont. To, co obserwujesz, zostaje na Twoim urządzeniu.',
@@ -790,10 +791,10 @@ const I18N = {
     'faq.1.q': 'Kiedy premiera?', 'faq.1.a': 'Wkrótce, w App Store na iPhone’a. Nie mamy jeszcze daty, więc zajrzyj tu ponownie.',
     'faq.2.q': 'Czy aplikacja jest darmowa?', 'faq.2.a': 'Cena nie została jeszcze ogłoszona.',
     'faq.3.q': 'Czy potrzebuję konta?', 'faq.3.a': 'Nie. Wszystko, co wybierzesz, zostaje na Twoim urządzeniu.',
-    'faq.4.q': 'Skąd pochodzą dane?', 'faq.4.a': 'Komunikaty i terminy raportów pochodzą z bankier.pl, a notowania z Yahoo Finance. Oba to źródła zewnętrzne.',
+    'faq.4.q': 'Skąd pochodzą dane?', 'faq.4.a': 'Komunikaty i terminy raportów pochodzą z bankier.pl, a reakcje kursu z Yahoo Finance. Oba to źródła zewnętrzne.',
     'faq.5.q': 'Czy to porada inwestycyjna?', 'faq.5.a': 'Nie. StockPilot ma charakter wyłącznie informacyjny i nie stanowi porady inwestycyjnej.',
     'foot.h2': ['Wkrótce w', 'App Store.'], 'foot.tag': 'Twoje centrum dowodzenia na giełdzie.',
-    'foot.c1': 'Produkt', 'foot.c2': 'Pod maską', 'foot.d1': 'Komunikaty ESPI/EBI z bankier.pl', 'foot.d2': 'Notowania z Yahoo Finance',
+    'foot.c1': 'Produkt', 'foot.c2': 'Pod maską', 'foot.d1': 'Komunikaty ESPI/EBI z bankier.pl', 'foot.d2': 'Reakcje kursu z Yahoo Finance',
     'foot.legal': '© 2026 StockPilot. Dane mają charakter informacyjny i nie stanowią porady inwestycyjnej.', 'foot.apple': 'App Store jest znakiem usługowym Apple Inc.'
   }
 };
