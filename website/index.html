@@ -297,6 +297,34 @@ html.ready .header{opacity:1;transform:none}
 
 /* ---------- faq ---------- */
 .faq .shell{padding:0 1.25rem 5rem;max-width:62rem}
+/* ---------- waitlist ---------- */
+.waitlist .shell{padding:0 1.25rem 5rem}
+@media (min-width:640px){.waitlist .shell{padding-inline:2rem}}
+@media (min-width:1024px){.waitlist .shell{padding-bottom:7rem}}
+.wl-panel{border-radius:2rem;background:radial-gradient(80% 90% at 0% 100%,rgba(210,22,39,.55),transparent 70%),linear-gradient(135deg,#8e0e1a,#0a0a0a 75%);padding:3rem 1.5rem;color:#fff;--y:40px;--s:.99;display:grid;gap:2.5rem;align-items:center}
+@media (min-width:640px){.wl-panel{padding:4rem 2rem}}
+@media (min-width:1024px){.wl-panel{grid-template-columns:1fr 1fr;padding:5rem 4rem;gap:4rem}}
+.wl-panel .h2{margin-top:1rem;max-width:14ch;font-size:2.25rem}
+@media (min-width:768px){.wl-panel .h2{font-size:3rem}}
+.wl-sub{margin-top:1.25rem;max-width:30rem;font-size:1rem;line-height:1.5;color:rgba(255,255,255,.75)}
+.wl-form{display:flex;flex-direction:column;gap:1rem}
+.wl-row{display:flex;flex-direction:column;gap:.75rem}
+@media (min-width:640px){.wl-row{flex-direction:row;align-items:center}}
+.wl-row input[type=email]{flex:1;min-width:0;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;border-radius:9999px;padding:1rem 1.5rem;font:inherit;font-size:1rem;outline:none;transition:border-color .2s,background .2s}
+.wl-row input[type=email]::placeholder{color:rgba(255,255,255,.55)}
+.wl-row input[type=email]:focus{border-color:#fff;background:rgba(255,255,255,.16)}
+.wl-row .pill{justify-content:space-between;padding-block:.5rem}
+.wl-row .pill:disabled{opacity:.6;cursor:wait}
+.wl-consent{display:flex;gap:.75rem;align-items:flex-start;font-size:.8125rem;line-height:1.45;color:rgba(255,255,255,.7);cursor:pointer}
+.wl-consent input{flex:none;margin-top:.15rem;width:1.1rem;height:1.1rem;accent-color:#fff}
+.wl-consent a{text-decoration:underline;text-underline-offset:2px;color:#fff}
+.wl-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.wl-status{min-height:1.25rem;font-size:.875rem;font-weight:500;color:#ffd1d5}
+.wl-done{display:flex;flex-direction:column;gap:.75rem;padding:2rem;border-radius:1.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25)}
+.wl-done h3{font-size:1.5rem;font-weight:600;letter-spacing:-.01em}
+.wl-done p{font-size:.9375rem;color:rgba(255,255,255,.8)}
+.wl-done .chk{width:2.75rem;height:2.75rem;border-radius:9999px;background:#fff;color:var(--accent);display:grid;place-items:center;font-size:1.25rem}
+[hidden]{display:none!important}
 @media (min-width:640px){.faq .shell{padding-inline:2rem}}
 @media (min-width:1024px){.faq .shell{padding-bottom:7rem}}
 .faq .h2{margin:1.25rem 0 2.5rem}
@@ -326,6 +354,9 @@ html.ready .header{opacity:1;transform:none}
 .fcols li{margin-bottom:.75rem;font-size:.875rem}
 .fcols li.txt{color:rgba(255,255,255,.7)}
 .flink{display:inline-flex}
+.fcta-r{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}
+.legal a{text-decoration:underline;text-underline-offset:2px}
+.legal a:hover{color:#fff}
 .legal{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid rgba(255,255,255,.1);padding-top:2rem;font-size:.75rem;color:rgba(255,255,255,.45);text-align:center}
 @media (min-width:640px){.legal{flex-direction:row;text-align:left}}
 .fwm{position:absolute;inset-inline:0;bottom:-1.5rem;z-index:0;text-align:center;pointer-events:none;user-select:none;font-weight:700;line-height:1;font-size:13rem;color:rgba(255,255,255,.05);white-space:nowrap}
@@ -384,6 +415,7 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
         <li><button data-go="features"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.features">Features</span></button></li>
         <li><button data-go="how"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.how">How it works</span></button></li>
         <li><button data-go="facts"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.facts">Facts</span></button></li>
+        <li><button data-go="waitlist"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.waitlist">Waitlist</span></button></li>
         <li><button data-go="faq"><span data-sp="y:-2;o:.8-1;t:320,22" data-sp-trigger="button" style="display:block" data-i18n="nav.faq">FAQ</span></button></li>
       </ul>
     </nav>
@@ -426,6 +458,10 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
           <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
           <span><small data-i18n="store.small">Coming soon on the</small><b>App Store</b></span>
         </div>
+        <button class="pill light arrow" data-go="waitlist" data-sp="s:1.04">
+          <span data-i18n="hero.cta3">Join the waitlist</span>
+          <span class="pill-badge"><svg class="i ico-s" viewBox="0 0 24 24" data-sp="x:3;t:320,18" data-sp-trigger=".pill"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </button>
         <button class="pill glass arrow" data-go="features" data-sp="s:1.04">
           <span data-i18n="hero.cta2">See features</span>
           <span class="pill-badge"><svg class="i ico-s" viewBox="0 0 24 24" data-sp="y:3;t:320,18" data-sp-trigger=".pill"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span>
@@ -558,6 +594,36 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
   </div>
 </section>
 
+<!-- ============ WAITLIST ============ -->
+<section class="waitlist" id="waitlist">
+  <div class="shell">
+    <div class="wl-panel rv">
+      <div>
+        <p class="eyebrow light" data-i18n="wl.eyebrow">Waitlist</p>
+        <h2 class="h2" data-lines="wl.h2" style="--d:120ms"></h2>
+        <p class="wl-sub" data-i18n="wl.sub"></p>
+      </div>
+      <div>
+        <form class="wl-form" id="wl-form" novalidate>
+          <div class="wl-row">
+            <label class="sr-only" for="wl-email" data-i18n="wl.label">Email address</label>
+            <input id="wl-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="254" data-i18n-ph="wl.ph" placeholder="you@example.com" />
+            <button class="pill light arrow" type="submit" id="wl-btn"><span data-i18n="wl.btn">Notify me</span><span class="pill-badge"><svg class="i ico-s" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+          </div>
+          <label class="wl-consent"><input type="checkbox" id="wl-consent" required /><span><span data-i18n="wl.consent">I agree to be emailed about the StockPilot launch. You can unsubscribe any time.</span> <a href="privacy.html" data-i18n="wl.privacy">Privacy policy</a></span></label>
+          <div class="wl-hp" aria-hidden="true"><label>Leave empty <input type="text" id="wl-hp" name="hp" tabindex="-1" autocomplete="off" /></label></div>
+          <p class="wl-status" id="wl-status" role="status" aria-live="polite"></p>
+        </form>
+        <div class="wl-done" id="wl-done" hidden role="status">
+          <span class="chk" aria-hidden="true">✓</span>
+          <h3 data-i18n="wl.done.h">You're on the list.</h3>
+          <p data-i18n="wl.done.p">Thanks! We'll email you when StockPilot launches.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FAQ ============ -->
 <section class="faq" id="faq">
   <div class="shell">
@@ -579,9 +645,12 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
   <div class="shell">
     <div class="fcta">
       <h2 class="h2" data-lines="foot.h2" style="--ls:100ms"></h2>
-      <div class="store on-dark rv" style="--y:14px;--d:300ms" role="img" aria-label="Coming soon on the App Store" data-aria="store.aria" data-sp="s:1.04">
+      <div class="fcta-r rv" style="--y:14px;--d:300ms">
+      <div class="store on-dark" role="img" aria-label="Coming soon on the App Store" data-aria="store.aria" data-sp="s:1.04">
         <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
         <span><small data-i18n="store.small">Coming soon on the</small><b>App Store</b></span>
+      </div>
+      <button class="pill glass arrow" data-go="waitlist" data-sp="s:1.04"><span data-i18n="hero.cta3">Join the waitlist</span><span class="pill-badge"><svg class="i ico-s" viewBox="0 0 24 24" data-sp="x:3;t:320,18" data-sp-trigger=".pill"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
       </div>
     </div>
     <div class="fcols">
@@ -610,7 +679,7 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
     </div>
     <div class="legal">
       <span data-i18n="foot.legal">© 2026 StockPilot. Data is informational and not investment advice.</span>
-      <span data-i18n="foot.apple">App Store is a service mark of Apple Inc.</span>
+      <span><a href="privacy.html" data-i18n="foot.privacy">Privacy policy</a> · <span data-i18n="foot.apple">App Store is a service mark of Apple Inc.</span></span>
     </div>
   </div>
   <div class="fwm" aria-hidden="true">STOCKPILOT</div>
@@ -628,7 +697,8 @@ setTimeout(function(){ if(!window.__sp){ var l=document.getElementById('loader')
       <li><button data-go="features" style="--i:1"><span class="ix">02</span><span class="lb" data-i18n="nav.features">Features</span></button></li>
       <li><button data-go="how" style="--i:2"><span class="ix">03</span><span class="lb" data-i18n="nav.how">How it works</span></button></li>
       <li><button data-go="facts" style="--i:3"><span class="ix">04</span><span class="lb" data-i18n="nav.facts">Facts</span></button></li>
-      <li><button data-go="faq" style="--i:4"><span class="ix">05</span><span class="lb">FAQ</span></button></li>
+      <li><button data-go="waitlist" style="--i:4"><span class="ix">05</span><span class="lb" data-i18n="nav.waitlist">Waitlist</span></button></li>
+      <li><button data-go="faq" style="--i:5"><span class="ix">06</span><span class="lb">FAQ</span></button></li>
     </ul>
   </nav>
   <div class="shell menu-bot">
@@ -755,6 +825,15 @@ const I18N = {
     'faq.5.q': 'Is this investment advice?', 'faq.5.a': 'No. StockPilot is informational only and is not investment advice.',
     'foot.h2': ['Coming soon to', 'the App Store.'], 'foot.tag': 'Your command center for the Warsaw Stock Exchange.',
     'foot.c1': 'Product', 'foot.c2': 'Under the hood', 'foot.d1': 'ESPI/EBI filings via bankier.pl', 'foot.d2': 'Price reactions via Yahoo Finance',
+    'nav.waitlist': 'Waitlist', 'hero.cta3': 'Join the waitlist',
+    'wl.eyebrow': 'Waitlist', 'wl.h2': ['Be first to know', 'when it launches.'],
+    'wl.sub': "Leave your email and we'll send you a message when StockPilot is on the App Store. Nothing else.",
+    'wl.label': 'Email address', 'wl.ph': 'you@example.com', 'wl.btn': 'Notify me', 'wl.sending': 'Sending…',
+    'wl.consent': 'I agree to be emailed about the StockPilot launch. You can unsubscribe any time.', 'wl.privacy': 'Privacy policy',
+    'wl.done.h': "You're on the list.", 'wl.done.p': "Thanks! We'll email you when StockPilot launches.",
+    'wl.err.email': 'Please enter a valid email address.', 'wl.err.consent': 'Please tick the box to continue.',
+    'wl.err.rate': 'Too many attempts. Please try again later.', 'wl.err.generic': 'Something went wrong. Please try again.',
+    'foot.privacy': 'Privacy policy',
     'foot.legal': '© 2026 StockPilot. Data is informational and not investment advice.', 'foot.apple': 'App Store is a service mark of Apple Inc.'
   },
   pl: {
@@ -795,6 +874,15 @@ const I18N = {
     'faq.5.q': 'Czy to porada inwestycyjna?', 'faq.5.a': 'Nie. StockPilot ma charakter wyłącznie informacyjny i nie stanowi porady inwestycyjnej.',
     'foot.h2': ['Wkrótce w', 'App Store.'], 'foot.tag': 'Twoje centrum dowodzenia na giełdzie.',
     'foot.c1': 'Produkt', 'foot.c2': 'Pod maską', 'foot.d1': 'Komunikaty ESPI/EBI z bankier.pl', 'foot.d2': 'Reakcje kursu z Yahoo Finance',
+    'nav.waitlist': 'Zapisy', 'hero.cta3': 'Dołącz do listy',
+    'wl.eyebrow': 'Lista oczekujących', 'wl.h2': ['Dowiedz się pierwszy,', 'kiedy ruszamy.'],
+    'wl.sub': 'Zostaw adres e-mail, a damy Ci znać, gdy StockPilot pojawi się w App Store. Nic więcej.',
+    'wl.label': 'Adres e-mail', 'wl.ph': 'ty@example.com', 'wl.btn': 'Powiadom mnie', 'wl.sending': 'Wysyłanie…',
+    'wl.consent': 'Zgadzam się na otrzymanie wiadomości o premierze StockPilot. Mogę w każdej chwili zrezygnować.', 'wl.privacy': 'Polityka prywatności',
+    'wl.done.h': 'Jesteś na liście.', 'wl.done.p': 'Dziękujemy! Napiszemy, gdy StockPilot wystartuje.',
+    'wl.err.email': 'Podaj poprawny adres e-mail.', 'wl.err.consent': 'Zaznacz zgodę, aby kontynuować.',
+    'wl.err.rate': 'Zbyt wiele prób. Spróbuj ponownie później.', 'wl.err.generic': 'Coś poszło nie tak. Spróbuj ponownie.',
+    'foot.privacy': 'Polityka prywatności',
     'foot.legal': '© 2026 StockPilot. Dane mają charakter informacyjny i nie stanowią porady inwestycyjnej.', 'foot.apple': 'App Store jest znakiem usługowym Apple Inc.'
   }
 };
@@ -823,6 +911,7 @@ function applyLang(l) {
   lang = l; root.lang = l;
   $$('[data-i18n]').forEach(el => { el.textContent = T(el.dataset.i18n); });
   $$('[data-aria]').forEach(el => el.setAttribute('aria-label', T(el.dataset.aria)));
+  $$('[data-i18n-ph]').forEach(el => el.setAttribute('placeholder', T(el.dataset.i18nPh)));
   $$('[data-lines]').forEach(renderLines);
   $$('[data-words]').forEach(renderWords);
   document.title = T('meta.title');
@@ -973,6 +1062,26 @@ document.addEventListener('click', e => {
   const go = e.target.closest('[data-go]');
   if (go) { const inMenu = menu.classList.contains('open'); if (inMenu) closeMenu(); setTimeout(() => goTo(go.dataset.go), inMenu ? 60 : 0); }
   const lb = e.target.closest('[data-lang]'); if (lb) applyLang(lb.dataset.lang);
+});
+
+/* ---------- waitlist form ---------- */
+const wlForm = $('#wl-form'), wlStatus = $('#wl-status'), wlBtn = $('#wl-btn'), wlDone = $('#wl-done');
+function wlSay(key) { if (key) { wlStatus.dataset.i18n = key; wlStatus.textContent = T(key); } else { delete wlStatus.dataset.i18n; wlStatus.textContent = ''; } }
+function wlShowDone() { wlForm.hidden = true; wlDone.hidden = false; }
+try { if (localStorage.getItem('sp-waitlist') === '1') wlShowDone(); } catch (e) {}
+wlForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#wl-email').value.trim();
+  if (!$('#wl-email').checkValidity() || !email) return wlSay('wl.err.email');
+  if (!$('#wl-consent').checked) return wlSay('wl.err.consent');
+  wlSay(null); wlBtn.disabled = true; const label = $('span', wlBtn); label.dataset.i18n = 'wl.sending'; label.textContent = T('wl.sending');
+  try {
+    const r = await fetch('/api/waitlist', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, lang, consent: true, hp: $('#wl-hp').value }) });
+    if (r.ok) { try { localStorage.setItem('sp-waitlist', '1'); } catch (e) {} wlShowDone(); }
+    else wlSay(r.status === 429 ? 'wl.err.rate' : r.status === 400 ? 'wl.err.email' : 'wl.err.generic');
+  } catch (err) { wlSay('wl.err.generic'); }
+  wlBtn.disabled = false; label.dataset.i18n = 'wl.btn'; label.textContent = T('wl.btn');
 });
 
 /* ---------- boot ---------- */
