@@ -44,26 +44,7 @@ struct AnnouncementsFeedView: View {
                         item.isRead = true
                         reader = ReaderLink(string: item.url)
                     } label: {
-                        HStack(alignment: .top, spacing: 8) {
-                            if !item.isRead {
-                                Circle()
-                                    .fill(.tint)
-                                    .frame(width: 8, height: 8)
-                                    .padding(.top, 6)
-                            }
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(item.companyTicker ?? "")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text(item.title)
-                                    .font(item.isRead ? .body : .body.bold())
-                                    .foregroundStyle(.primary)
-                                Text(item.publishedAt.polishDateTime)
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                AnnouncementTagRow(announcement: item)
-                            }
-                        }
+                        AnnouncementRow(item: item, showsTicker: true)
                     }
                     .buttonStyle(.plain)
                 }

@@ -31,8 +31,6 @@ struct CompanyDetailView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    Spacer()
-                    QuoteBadge(ticker: company.ticker)
                 }
                 HStack {
                     Button {
@@ -70,23 +68,7 @@ struct CompanyDetailView: View {
                             item.isRead = true
                             reader = ReaderLink(string: item.url)
                         } label: {
-                            HStack(alignment: .top, spacing: 8) {
-                                if !item.isRead {
-                                    Circle()
-                                        .fill(.tint)
-                                        .frame(width: 8, height: 8)
-                                        .padding(.top, 6)
-                                }
-                                VStack(alignment: .leading) {
-                                    Text(item.title)
-                                        .font(item.isRead ? .body : .body.bold())
-                                        .foregroundStyle(.primary)
-                                    Text(item.publishedAt.polishDateTime)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                    AnnouncementTagRow(announcement: item)
-                                }
-                            }
+                            AnnouncementRow(item: item)
                         }
                         .buttonStyle(.plain)
                     }

@@ -25,6 +25,15 @@ enum AnnouncementTag: CaseIterable {
         }
     }
 
+    /// Lower is more important when ranking filings in the briefing.
+    var priority: Int {
+        switch self {
+        case .results, .dividend: 0
+        case .generalMeeting: 1
+        case .transactions: 3
+        }
+    }
+
     /// Lowercased fragments; a title matches when it contains any of them.
     private var keywords: [String] {
         switch self {
@@ -50,6 +59,9 @@ enum AnnouncementTag: CaseIterable {
 
 extension Announcement {
     var tags: [AnnouncementTag] { AnnouncementTag.tags(for: title) }
+
+    /// Untagged filings rank between meetings and routine transaction filings.
+    var priority: Int { tags.map(\.priority).min() ?? 2 }
 }
 
 struct AnnouncementTagRow: View {

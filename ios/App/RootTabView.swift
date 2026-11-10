@@ -17,23 +17,32 @@ struct RootTabView: View {
         return allAnnouncements.filter { !$0.isRead && (($0.companyTicker).map(watchedTickers.contains) ?? false) }.count
     }
 
+    private enum AppTab: Hashable {
+        case today, announcements, calendar
+    }
+
+    @State private var selectedTab: AppTab = .today
+
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             NavigationStack {
-                WatchlistView(watchedCompanies: watchedCompanies)
+                TodayView(watchedCompanies: watchedCompanies, showAnnouncements: { selectedTab = .announcements })
             }
-            .tabItem { Label("Obserwowane", systemImage: "star.fill") }
+            .tabItem { Label("Dziś", systemImage: "house.fill") }
+            .tag(AppTab.today)
 
             NavigationStack {
                 AnnouncementsFeedView(watchedCompanies: watchedCompanies)
             }
             .tabItem { Label("Komunikaty", systemImage: "megaphone.fill") }
             .badge(unreadCount)
+            .tag(AppTab.announcements)
 
             NavigationStack {
                 EarningsCalendarView(watchedCompanies: watchedCompanies)
             }
             .tabItem { Label("Kalendarz", systemImage: "calendar") }
+            .tag(AppTab.calendar)
         }
         .task {
             pushManager.requestAuthorizationAndRegister()
