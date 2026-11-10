@@ -7,7 +7,7 @@
 <p align="center">
   <em>Twoje centrum dowodzenia na giełdzie.</em><br />
   A native iOS companion for investors in Warsaw Stock Exchange (GPW) companies:
-  watchlist, ESPI/EBI announcements and an earnings calendar in one place.
+  a daily briefing, ESPI/EBI announcements and an earnings calendar in one place.
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/watchlist.png" width="23%" alt="Watchlist" />
+  <img src="docs/screenshots/today.png" width="23%" alt="Today" />
   <img src="docs/screenshots/announcements.png" width="23%" alt="Announcements" />
   <img src="docs/screenshots/calendar.png" width="23%" alt="Earnings calendar" />
   <img src="docs/screenshots/company-detail.png" width="23%" alt="Company detail" />
@@ -27,10 +27,10 @@
 
 ## Features
 
-- **Watchlist ("Obserwowane").** Pick companies from the full GPW main market (~400 tickers, bundled as a seed) and see live prices and daily change.
+- **Today ("Dziś").** A daily briefing with the number of new filings and reports due this week, the most important recent filings, upcoming report dates, and below them the companies you follow with their status (new filings, next report date). Pick companies from the full GPW main market (~400 tickers, bundled as a seed). No live prices.
 - **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge. Each filing carries category tags (Wyniki, Dywidenda, WZA, Transakcje) derived from its title. Results and dividend filings from the last week also show how the price moved afterwards (e.g. "+3,2% w 1 h", or "kolejna sesja +2,5%" for after-hours filings), and filings open in an in-app reader instead of leaving the app.
 - **Earnings calendar.** Month view with today highlighted and a list of the selected month's report dates, filled in automatically.
-- **Company detail.** Quote, filings and report dates for a single company. Long lists are collapsed to three items with a "Pokaż więcej" toggle.
+- **Company detail.** Filings and report dates for a single company. Long lists are collapsed to three items with a "Pokaż więcej" toggle.
 - **Per-company notifications.** The bell on a company screen turns its notifications on (filled) or off (crossed out) without removing it from the watchlist.
 - **Local notifications.** A banner is posted when a refresh finds new filings.
 - **Push (backend ready).** Subscription upload and APNs delivery are implemented and gated on credentials, see [Limitations](#limitations).
@@ -54,7 +54,7 @@
                   +-------------------------------------------------------------+
                   |  iOS app (SwiftUI + SwiftData)                               |
                   |  SwiftData is the source of truth; backend responses are     |
-                  |  upserted locally. Quotes are fetched directly from the app. |
+                  |  upserted locally. Price reactions are fetched directly from the app. |
                   +-------------------------------------------------------------+
 ```
 
@@ -91,7 +91,6 @@ The backend exists because push notifications need a process that watches the so
 | New ESPI/EBI filings | `bankier.pl/rss/espi.xml` | Polled every 3 minutes. The feed only keeps the latest ~20-30 items. |
 | Filing history | `bankier.pl/gielda/notowania/akcje/{TICKER}/komunikaty` | Scraped lazily the first time a ticker is requested. |
 | Report dates | `bankier.pl/gielda/notowania/akcje/{TICKER}/kalendarium` | Scraped lazily; only entries tagged "Wyniki spółek" are kept. Dates come from `data-timestamp`. |
-| Quotes | Yahoo Finance chart API, `{TICKER}.WA` | Called from the app, 60 s in-memory cache, degrades quietly when unavailable. |
 | Price reaction | Same API, 5-minute bars for the last month | One request per ticker, cached 5 min. Only fetched for recent results/dividend filings. |
 | Company list | Bundled `companies_seed.json` | 402 companies: ticker, ISIN, full name. |
 
@@ -156,9 +155,9 @@ backend/
     scripts/                 seedCompanies, pollEspiOnce
 ios/
   App/                       entry point, root tab view
-  Features/                  Watchlist, Announcements, Calendar, CompanyDetail
+  Features/                  Today, Announcements, Calendar, CompanyDetail
   Models/                    SwiftData models
-  Networking/                API endpoints, sync, quotes, background refresh
+  Networking/                API endpoints, sync, price reaction, background refresh
   Notifications/             push registration
   Resources/                 companies_seed.json
   project.yml                XcodeGen spec
