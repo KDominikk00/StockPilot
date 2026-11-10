@@ -10,6 +10,7 @@ struct EarningsCalendarView: View {
 
     @State private var visibleMonth: Date = Calendar.current.startOfDay(for: .now)
     @State private var syncError: String?
+    @State private var exportMessage: String?
 
     private var watchedTickers: Set<String> {
         Set(watchedCompanies.map(\.ticker))
@@ -19,6 +20,24 @@ struct EarningsCalendarView: View {
         let calendar = Calendar.current
         let relevant = allEvents.filter { ($0.companyTicker).map(watchedTickers.contains) ?? false }
         return Dictionary(grouping: relevant) { calendar.startOfDay(for: $0.eventDate) }
+    }
+
+    private func exportToAppleCalendar() async {
+        let names = Dictionary(watchedCompanies.map { ($0.ticker, $0.displayName) }, uniquingKeysWith: { a, _ in a })
+        let items = eventsByDay.values.flatMap { $0 }.sorted { $0.eventDate < $1.eventDate }.map { event in
+            let ticker = event.companyTicker ?? ""
+            return CalendarExporter.Item(
+                title: "\(ticker): \(event.reportType)",
+                notes: names[ticker] ?? ticker,
+                day: CalendarExporter.allDayDate(for: event.eventDate)
+            )
+        }
+        do {
+            let count = try await CalendarExporter.export(items)
+            exportMessage = "Dodano \(count) terminów do kalendarza „StockPilot”."
+        } catch {
+            exportMessage = error.localizedDescription
+        }
     }
 
     var body: some View {
@@ -69,6 +88,21 @@ struct EarningsCalendarView: View {
             }
         }
         .navigationTitle("Kalendarz wyników")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task { await exportToAppleCalendar() }
+                } label: {
+                    Label("Dodaj do Kalendarza Apple", systemImage: "square.and.arrow.up")
+                }
+                .disabled(eventsByDay.isEmpty)
+            }
+        }
+        .alert("Kalendarz Apple", isPresented: .constant(exportMessage != nil), actions: {
+            Button("OK") { exportMessage = nil }
+        }, message: {
+            Text(exportMessage ?? "")
+        })
         .alert("Błąd synchronizacji", isPresented: .constant(syncError != nil), actions: {
             Button("OK") { syncError = nil }
         }, message: {

@@ -39,6 +39,7 @@ targets:
           - UIInterfaceOrientationPortrait
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
+        NSCalendarsFullAccessUsageDescription: "StockPilot dodaje terminy publikacji raportów do osobnego kalendarza „StockPilot”."
         UIBackgroundModes:
           - fetch
         BGTaskSchedulerPermittedIdentifiers:

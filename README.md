@@ -30,6 +30,7 @@
 - **Today ("Dziś").** A daily briefing with the number of new filings and reports due this week, the most important recent filings, upcoming report dates, and below them the companies you follow with their status (new filings, next report date). Pick companies from the full GPW main market (~400 tickers, bundled as a seed). No live prices.
 - **Announcements feed.** Official ESPI/EBI filings for the companies you follow, newest first, with unread markers and a tab badge. Each filing carries category tags (Wyniki, Dywidenda, WZA, Transakcje) derived from its title. Results and dividend filings from the last week also show how the price moved afterwards (e.g. "+3,2% w 1 h", or "kolejna sesja +2,5%" for after-hours filings), and filings open in an in-app reader instead of leaving the app.
 - **Earnings calendar.** Month view with today highlighted and a list of the selected month's report dates, filled in automatically.
+- **Apple Calendar export.** One tap on the calendar tab copies all report dates of your watched companies into a separate "StockPilot" calendar in Apple Calendar; re-exporting replaces them, so nothing is duplicated.
 - **Company detail.** Filings and report dates for a single company. Long lists are collapsed to three items with a "Pokaż więcej" toggle.
 - **Per-company notifications.** The bell on a company screen turns its notifications on (filled) or off (crossed out) without removing it from the watchlist.
 - **Local notifications.** A banner is posted when a refresh finds new filings.
